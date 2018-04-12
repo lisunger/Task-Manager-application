@@ -14,12 +14,12 @@ import java.util.Arrays;
 
 public class TasksSQLiteHelper extends SQLiteOpenHelper {
 
-    private static final String DB_NAME = "TASKMANAGER";
-    private static final String TABLE_TOPICS = "TOPICS";
+    public static final String DB_NAME = "TASKMANAGER";
+    public static final String TABLE_TOPICS = "TOPICS";
     private static final int DB_VERSION = 1;
 
-    public TasksSQLiteHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DB_NAME, factory, DB_VERSION);
+    public TasksSQLiteHelper(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
     }
 
     @Override
@@ -31,15 +31,14 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
         StringBuilder sb = new StringBuilder();
         sb.append("create table ");
         sb.append(TABLE_TOPICS);
-        sb.append(" (_id integer primary key autoincrement, ");
-        sb.append("name text);");
+        sb.append(" (_id integer primary key autoincrement, name text);");
 
         db.execSQL(sb.toString());
 
         // add some predefined topics to the TOPICS table
-        insertTopic(db, "Topic1");
-        insertTopic(db, "Topic2");
-        insertTopic(db, "Topic3");
+        insertTopic(db, "Тема 1");
+        insertTopic(db, "Тема 2");
+        insertTopic(db, "Тема 3");
 
     }
 

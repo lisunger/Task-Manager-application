@@ -1,9 +1,16 @@
 package com.nkanev.taskmanager;
 
-import android.app.Fragment;
+
+
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +19,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.nkanev.taskmanager.database.TasksSQLiteHelper;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static int index = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,19 +45,48 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main,menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_new_topic :
+        switch (item.getItemId()) {
+            case R.id.menu_new_topic:
+
+                addTopicToDB(new Integer(index++).toString());
+                ViewPager pager = findViewById(R.id.pager);
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + pager.getCurrentItem());
+                refreshFragment(fragment);
+
                 Toast t = Toast.makeText(this, "Add new topic", Toast.LENGTH_SHORT);
                 t.show();
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void addTopicToDB(String title) {
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(this);
+
+        try {
+            SQLiteDatabase db = databaseHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put("name", title);
+            db.insert(TasksSQLiteHelper.TABLE_TOPICS, null, values);
+        } catch (SQLiteException e) {
+            Toast t = Toast.makeText(this, "Database error", Toast.LENGTH_SHORT);
+            t.show();
+        } finally {
+            databaseHelper.close();
+        }
+    }
+
+    private void refreshFragment(Fragment fragment) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.detach(fragment);
+        fragmentTransaction.attach(fragment);
+        fragmentTransaction.commit();
     }
 
     private class TopicsPagerAdapter extends FragmentPagerAdapter {
@@ -57,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public android.support.v4.app.Fragment getItem(int position) {
-            switch(position) {
+            switch (position) {
                 case 0:
                     return new TopicsAllFragment();
                 case 1:
@@ -76,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch(position) {
+            switch (position) {
                 case 0:
                     return getResources().getString(R.string.tab_all);
                 case 1:

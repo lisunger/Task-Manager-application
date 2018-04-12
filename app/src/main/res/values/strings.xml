@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Task Manager</string>
 
+    <string name="topics_activity_title">Topics</string>
+
     <string name="create_topic_title">New topic</string>
 
     <!-- TODO: Remove or change this placeholder text -->
