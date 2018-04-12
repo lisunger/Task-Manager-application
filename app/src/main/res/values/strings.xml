@@ -2,6 +2,7 @@
     <string name="app_name">Task Manager</string>
 
     <string name="topics_activity_title">Topics</string>
+    <string name="new_topic_fragment_title">New topic</string>
 
     <string name="create_topic_title">New topic</string>
 
@@ -35,5 +36,9 @@
     <string name="tab_all">All</string>
     <string name="tab_compl">Complete</string>
     <string name="tab_incompl">Incomplete</string>
+
+    <!-- Button titles -->
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
 
 </resources>
