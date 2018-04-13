@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context="com.nkanev.taskmanager.MainActivity">
 
+    <!-- Code for the toolbar and tabs strip at the top -->
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,8 +23,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <!-- The main content of the activity - the pager with the topics list -->
     <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+        android:id="@+id/pager_topics"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

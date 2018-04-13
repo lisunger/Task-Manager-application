@@ -81,9 +81,11 @@ public class TopicsAllFragment extends Fragment {
 
     private class TopicsCardsAdapter extends RecyclerView.Adapter<TopicsCardsAdapter.ViewHolder> {
 
+        private String[] topicIds;
         private String[] topicNames;
 
-        public TopicsCardsAdapter(String[] topicNames) {
+        public TopicsCardsAdapter(String[] topicIds, String[] topicNames) {
+            this.topicIds = topicIds;
             this.topicNames = topicNames;
         }
 

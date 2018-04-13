@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,9 +39,16 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
 
         TopicsPagerAdapter pagerAdapter =
                 new TopicsPagerAdapter(getSupportFragmentManager());
-        ViewPager pager = findViewById(R.id.pager);
+        ViewPager pager = findViewById(R.id.pager_topics);
         pager.setAdapter(pagerAdapter);
         pages = pagerAdapter.getCount();
+        pager.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                int a = 2;
+            }
+        });
 
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(pager);
@@ -86,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
 
     private void refreshPagerFragments() {
         for(int i = 0; i < pages; i++) {
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":" + 0);
+            Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager_topics + ":" + 0);
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.detach(fragment);
             fragmentTransaction.attach(fragment);
@@ -157,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
                     return null;
             }
         }
+
     }
 
 }
