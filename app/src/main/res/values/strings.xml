@@ -41,4 +41,10 @@
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
 
+    <!-- Image descriptions -->
+    <string name="desc_topic_icon">Topic icon</string>
+
+    <!-- TextViews -->
+    <string name="editText_empty_tasks">No tasks</string>
+
 </resources>

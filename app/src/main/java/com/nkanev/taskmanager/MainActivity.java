@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
             else {
                 showToast("Error when creating new topic");
             }
-
             refreshPagerFragments();
         }
     }
