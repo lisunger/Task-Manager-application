@@ -14,8 +14,9 @@ import java.util.Arrays;
 
 public class TasksSQLiteHelper extends SQLiteOpenHelper {
 
-    public static final String DB_NAME = "TASKMANAGER";
+    private static final String DB_NAME = "TASKMANAGER";
     public static final String TABLE_TOPICS = "TOPICS";
+    public static final String TABLE_TASKS = "TASKS";
     private static final int DB_VERSION = 1;
 
     public TasksSQLiteHelper(Context context) {
@@ -24,16 +25,8 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        /* create table TOPICS(
-            _id integer primary key autoincrement,
-            name text);
-        */
-        StringBuilder sb = new StringBuilder();
-        sb.append("create table ");
-        sb.append(TABLE_TOPICS);
-        sb.append(" (_id integer primary key autoincrement, name text);");
-
-        db.execSQL(sb.toString());
+        createTableTopics(db);
+        createTableTasks(db);
 
         // add some predefined topics to the TOPICS table
         insertTopic(db, "Тема 1");
@@ -50,5 +43,36 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
         ContentValues topic = new ContentValues();
         topic.put("name", name);
         db.insert(TABLE_TOPICS, null, topic);
+    }
+
+    private void createTableTopics(SQLiteDatabase db) {
+        /* create table TOPICS(
+             _id integer primary key autoincrement,
+             name text not null
+           );
+        */
+        StringBuilder sb = new StringBuilder();
+        sb.append("create table ");
+        sb.append(TABLE_TOPICS);
+        sb.append("(_id integer primary key autoincrement, name text not null);");
+
+        db.execSQL(sb.toString());
+    }
+
+    private void createTableTasks(SQLiteDatabase db) {
+        /* create table TASKS(
+             _id integer primary key autoincrement,
+             topicId integer not null,
+             name text not null,
+             foreign key(topicId) references TOPICS(_id)
+           );
+        */
+        StringBuilder sb = new StringBuilder();
+        sb.append("create table ");
+        sb.append(TABLE_TASKS);
+        sb.append("(_id integer primary key autoincrement, topicId integer not null, name text not null");
+        sb.append(", foreign key(topicId) references TOPICS(_id));");
+
+        db.execSQL(sb.toString());
     }
 }
