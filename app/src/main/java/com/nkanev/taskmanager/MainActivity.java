@@ -14,20 +14,22 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
-public class MainActivity extends AppCompatActivity implements CreateTopicFragment.CreateTopicDialogListener{
+public class MainActivity extends AppCompatActivity implements CreateTopicFragment.CreateTopicDialogListener {
 
     private static final String TAG = "MainActivity";
     private Toast toast;
-    private int pages;
+    private TopicsAllFragment topicsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +39,11 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        TopicsPagerAdapter pagerAdapter =
-                new TopicsPagerAdapter(getSupportFragmentManager());
-        ViewPager pager = findViewById(R.id.pager_topics);
-        pager.setAdapter(pagerAdapter);
-        pages = pagerAdapter.getCount();
-        pager.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                int a = 2;
-            }
-        });
-
-        TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(pager);
+        this.topicsFragment = new TopicsAllFragment();
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(R.id.container_fragment_topics, this.topicsFragment);
+        transaction.commit();
 
     }
 
@@ -73,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
 
     /**
      * Add the title to the TOPICS table as a new topic
+     *
      * @param title the name of the new topic
      * @return <code>true</code> if the topic has been added successfully
      */
@@ -92,18 +85,17 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
         return newId != -1;
     }
 
-    private void refreshPagerFragments() {
-        for(int i = 0; i < pages; i++) {
-            Fragment fragment = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager_topics + ":" + 0);
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.detach(fragment);
-            fragmentTransaction.attach(fragment);
-            fragmentTransaction.commit();
-        }
+    private void refreshTopicsFragment() {
+        // You cannot reattach fragments that have been added to the layout with the
+        // <fragment> tag, that's why it has been added programmatically in a FrameLayout
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.detach(this.topicsFragment);
+        fragmentTransaction.attach(this.topicsFragment);
+        fragmentTransaction.commit();
     }
 
     private void showToast(String message) {
-        if(toast != null) {
+        if (toast != null) {
             toast.cancel();
         }
         toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
@@ -114,58 +106,17 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
     public void onDialogPositiveClick(String text) {
         Log.i(TAG, text);
         // Create a new topic in the database with the given name
-        if(text != null && text.trim().length() > 0) {
+        if (text != null && text.trim().length() > 0) {
             boolean topicCreated = addTopicToDB(text);
 
             if (topicCreated) {
                 showToast("Topic created");
-            }
-            else {
+            } else {
                 showToast("Error when creating new topic");
             }
-            refreshPagerFragments();
+            refreshTopicsFragment();
         }
     }
 
-    private class TopicsPagerAdapter extends FragmentPagerAdapter {
-
-        public TopicsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public android.support.v4.app.Fragment getItem(int position) {
-            switch (position) {
-                case 0:
-                    return new TopicsAllFragment();
-                case 1:
-                    return new TopicsCompleteFragment();
-                case 2:
-                    return new TopicsIncompleteFragment();
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return getResources().getString(R.string.tab_all);
-                case 1:
-                    return getResources().getString(R.string.tab_compl);
-                case 2:
-                    return getResources().getString(R.string.tab_incompl);
-                default:
-                    return null;
-            }
-        }
-
-    }
 
 }
