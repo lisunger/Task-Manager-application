@@ -1,6 +1,7 @@
 package com.nkanev.taskmanager;
 
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,9 +51,16 @@ public class TopicsAllFragment extends Fragment {
 
         this.topicsData = loadTopicsFromDB();
 
-        TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.topicsData);
+        TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.topicsData, new OnItemClickListener() {
+            @Override
+            public void onItemClick(String id) {
+                Log.d("Click!", "Position: " + id);
+                Intent intent = new Intent(getActivity(), TasksActivity.class);
+                intent.putExtra(TasksActivity.EXTRA_TOPIC_ID, id);
+                startActivity(intent);
+            }
+        });
         topicsRecycler.setAdapter(adapter);
-
 
         return topicsRecycler;
     }
@@ -93,6 +102,10 @@ public class TopicsAllFragment extends Fragment {
         return new String[][]{id, name};
     }
 
+    interface OnItemClickListener {
+        void onItemClick(String id);
+    }
+    /* ------------------------------------------------------------------------------------------ */
     /**
         The adapter class receives raw data and inserts every entry into a layout (CardView)
      */
@@ -100,10 +113,12 @@ public class TopicsAllFragment extends Fragment {
 
         private String[] topicIds;
         private String[] topicNames;
+        private final OnItemClickListener listener;
 
-        public TopicsCardsAdapter(String[][] data) {
+        public TopicsCardsAdapter(String[][] data, OnItemClickListener listener) {
             this.topicIds = data[0];
             this.topicNames = data[1];
+            this.listener = listener;
         }
 
         @Override
@@ -126,14 +141,22 @@ public class TopicsAllFragment extends Fragment {
         /**
          * Receives a holder (an empty layout) and fills it with data from the data set
          */
+
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(ViewHolder holder, final int position) {
             CardView cardView = holder.cardView;
             TextView topicName = cardView.findViewById(R.id.card_topic_name);
             topicName.setText(topicNames[position]);
+
+            cardView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemClick(topicIds[position]);
+                }
+            });
         }
 
 
+        /* -------------------------------------------------------------------------------------- */
         public class ViewHolder extends RecyclerView.ViewHolder {
 
             private CardView cardView;

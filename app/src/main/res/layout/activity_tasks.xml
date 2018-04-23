@@ -31,5 +31,10 @@
         android:layout_height="wrap_content"
         android:text="Hello, tasks activity!"/>
 
+    <TextView
+        android:id="@+id/myLittleId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>
