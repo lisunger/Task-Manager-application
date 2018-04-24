@@ -79,7 +79,6 @@ public class CreateTopicFragment extends DialogFragment {
 
     public interface CreateTopicDialogListener {
         public void onDialogPositiveClick(String text);
-        //public void onDialogNegativeClick(String text);
     }
 
 }

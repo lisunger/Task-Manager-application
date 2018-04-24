@@ -8,33 +8,27 @@
     android:orientation="vertical"
     tools:context="com.nkanev.taskmanager.TasksActivity">
 
-    <!-- Code for the toolbar and tabs strip at the top -->
-    <!--<android.support.design.widget.AppBarLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">-->
-
-        <!--<include-->
-            <!--android:id="@+id/toolbar_main"-->
-            <!--layout="@layout/toolbar_main" />-->
-
-    <!--</android.support.design.widget.AppBarLayout>-->
-
-    <!--&lt;!&ndash; The main content of the activity - the pager with the tasks list &ndash;&gt;-->
-    <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/pager_tasks"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"/>-->
-
-    <TextView
+     <!--Code for the toolbar and tabs strip at the top-->
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello, tasks activity!"/>
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-    <TextView
-        android:id="@+id/myLittleId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <include
+            android:id="@+id/toolbar_main"
+            layout="@layout/toolbar_main" />
 
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs_tasks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- The main content of the activity - the pager with the tasks list -->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_tasks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

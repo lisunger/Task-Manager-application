@@ -29,10 +29,14 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
         createTableTasks(db);
 
         // add some predefined topics to the TOPICS table
-        insertTopic(db, "Тема 1");
-        insertTopic(db, "Тема 2");
-        insertTopic(db, "Тема 3");
+        insertTopic(db, "Забавни");
+        insertTopic(db, "Домашни");
+        insertTopic(db, "Работни");
 
+        // add some predefined tasks to the TASKS table
+        insertTask(db, 1, "Домино", "Да наредя 285000 плочки домино");
+        insertTask(db, 2, "Сандвичи", "Да намажа филия с лютеница и сирене и да се почувствам като в доброто старо време");
+        insertTask(db, 3, "Софтуер", "Да се дебъгне приложението за миене на коли");
     }
 
     @Override
@@ -43,6 +47,14 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
         ContentValues topic = new ContentValues();
         topic.put("name", name);
         db.insert(TABLE_TOPICS, null, topic);
+    }
+
+    private static void insertTask(SQLiteDatabase db, int topicId, String name, String contents) {
+        ContentValues task = new ContentValues();
+        task.put("name", name);
+        task.put("topicId", topicId);
+        task.put("contents", contents);
+        db.insert(TABLE_TASKS, null, task);
     }
 
     private void createTableTopics(SQLiteDatabase db) {
@@ -64,14 +76,22 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
              _id integer primary key autoincrement,
              topicId integer not null,
              name text not null,
+             contents text,
+             complete integer not null default 0,
              foreign key(topicId) references TOPICS(_id)
            );
         */
         StringBuilder sb = new StringBuilder();
         sb.append("create table ");
         sb.append(TABLE_TASKS);
-        sb.append("(_id integer primary key autoincrement, topicId integer not null, name text not null");
+        sb.append("(_id integer primary key autoincrement");
+        sb.append(", topicId integer not null");
+        sb.append(", name text not null");
+        sb.append(", contents text");
+        sb.append(", complete integer not null default 0");
         sb.append(", foreign key(topicId) references TOPICS(_id));");
+
+        Log.d("Create table", sb.toString());
 
         db.execSQL(sb.toString());
     }

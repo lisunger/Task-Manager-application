@@ -2,36 +2,14 @@
     <string name="app_name">Task Manager</string>
 
     <string name="topics_activity_title">Topics</string>
+    <string name="tasks_activity_title">Tasks</string>
     <string name="new_topic_fragment_title">New topic</string>
 
     <string name="create_topic_title">New topic</string>
+    <string name="create_task_title">New task</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
-    <string-array name="topics_all">
-        <item>Лястовичка</item>
-        <item>Мишунгер</item>
-        <item>Кокошинка</item>
-        <item>Бумаги</item>
-        <item>Програматори</item>
-    </string-array>
-
-    <string-array name="topics_compl">
-        <item>Бъз</item>
-        <item>Пелерина</item>
-        <item>Хормони</item>
-        <item>Бостан</item>
-        <item>Лечителка</item>
-    </string-array>
-
-    <string-array name="topics_incompl">
-        <item>Ципура</item>
-        <item>Омнибус</item>
-        <item>Мармалад</item>
-        <item>Ме-сечина</item>
-        <item>Жълтичко</item>
-    </string-array>
 
     <string name="tab_all">All</string>
     <string name="tab_compl">Complete</string>

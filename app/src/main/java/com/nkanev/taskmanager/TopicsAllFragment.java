@@ -32,6 +32,7 @@ public class TopicsAllFragment extends Fragment {
      *  topicsData[1]: array with the NAME
      */
     private String[][] topicsData = new String[2][];
+    private static Toast toast;
 
     public TopicsAllFragment() {
         // Required empty public constructor
@@ -56,7 +57,7 @@ public class TopicsAllFragment extends Fragment {
             public void onItemClick(String id) {
                 Log.d("Click!", "Position: " + id);
                 Intent intent = new Intent(getActivity(), TasksActivity.class);
-                intent.putExtra(TasksActivity.EXTRA_TOPIC_ID, id);
+                intent.putExtra(TasksActivity.EXTRA_TOPIC_ID, Integer.valueOf(id));
                 startActivity(intent);
             }
         });
@@ -102,6 +103,34 @@ public class TopicsAllFragment extends Fragment {
         return new String[][]{id, name};
     }
 
+    private int getItemsByTopic(String topicId, boolean complete) {
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
+        int count = -1;
+        String completeAsString = (complete) ? "1" : "0";
+
+        try {
+            SQLiteDatabase db = databaseHelper.getReadableDatabase();
+            if (db != null) {
+
+                count = db.query(
+                        TasksSQLiteHelper.TABLE_TASKS,
+                        null,
+                        "topicId = ? and complete = ?",
+                        new String[]{ topicId, completeAsString },
+                        null, null, null, null)
+                        .getCount();
+
+            }
+            db.close();
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(getActivity(), "Database unavailable", Toast.LENGTH_LONG);
+            toast.show();
+            databaseHelper.close();
+        }
+
+        return (count != -1) ? count : 0;
+    }
+
     interface OnItemClickListener {
         void onItemClick(String id);
     }
@@ -141,12 +170,17 @@ public class TopicsAllFragment extends Fragment {
         /**
          * Receives a holder (an empty layout) and fills it with data from the data set
          */
-
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             CardView cardView = holder.cardView;
             TextView topicName = cardView.findViewById(R.id.card_topic_name);
             topicName.setText(topicNames[position]);
+
+            TextView complete = cardView.findViewById(R.id.text_complete_tasks);
+            TextView incomplete = cardView.findViewById(R.id.text_incomplete_tasks);
+
+            complete.setText(String.valueOf(getItemsByTopic(topicIds[position], true)));
+            incomplete.setText(String.valueOf(getItemsByTopic(topicIds[position], false)));
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
@@ -165,7 +199,6 @@ public class TopicsAllFragment extends Fragment {
                 super(cardView);
                 this.cardView = cardView;
             }
-
         }
     }
 
