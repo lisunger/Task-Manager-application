@@ -10,12 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class TasksActivity extends AppCompatActivity {
 
     private int TOPIC_ID;
     public static final String EXTRA_TOPIC_ID = "topicId";
-    private final Bundle bundle = new Bundle();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,16 @@ public class TasksActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabs_tasks);
         tabLayout.setupWithViewPager(pager);
 
-        this.bundle.putInt(TasksParentFragment.TOPIC_ID, this.TOPIC_ID);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_new_topic:
+                Toast.makeText(this, "Изморих се от задачи!", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -55,20 +65,27 @@ public class TasksActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            TasksParentFragment fragment;
+
+            Bundle bundle = new Bundle();
+            bundle.putInt(TasksFragment.TOPIC_ID, TOPIC_ID);
+
 
             switch (position) {
-//                case 0:
-//                    fragment = new AllTasksFragment(); break;
-//                case 1:
-//                    fragment = new CompleteTasksFragment(); break;
-//                case 2:
-//                    fragment = new IncompleteTasksFragment(); break;
                 case 0:
-                    fragment = new TasksParentFragment(); break;
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.ALL.ordinal());
+                    break;
+                case 1:
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.COMPLETE.ordinal());
+                    break;
+                case 2:
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.INCOMPLETE.ordinal());
+                    break;
                 default:
-                    fragment = new TasksParentFragment();
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.ALL.ordinal());
+                    break;
             }
+
+            TasksFragment fragment = new TasksFragment();
 
             fragment.setArguments(bundle);
             return fragment;
@@ -76,7 +93,7 @@ public class TasksActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 1;
+            return 3;
         }
 
         @Override

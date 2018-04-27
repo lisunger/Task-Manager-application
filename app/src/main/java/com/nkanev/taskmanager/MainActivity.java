@@ -4,24 +4,14 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
@@ -30,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
 
     private static final String TAG = "MainActivity";
     private Toast toast;
-    private TopicsAllFragment topicsFragment;
+    private TopicsFragment topicsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
         setContentView(R.layout.activity_main);
 
         // The fragment is added programmatically so that it can be reattached later
-        this.topicsFragment = new TopicsAllFragment();
+        this.topicsFragment = new TopicsFragment();
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.container_fragment_topics, this.topicsFragment);

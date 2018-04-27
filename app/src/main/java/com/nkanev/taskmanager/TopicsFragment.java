@@ -24,7 +24,7 @@ import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TopicsAllFragment extends Fragment {
+public class TopicsFragment extends Fragment {
 
     /**
      * The data the recycler displays:
@@ -34,7 +34,7 @@ public class TopicsAllFragment extends Fragment {
     private String[][] topicsData = new String[2][];
     private static Toast toast;
 
-    public TopicsAllFragment() {
+    public TopicsFragment() {
         // Required empty public constructor
     }
 
@@ -134,6 +134,7 @@ public class TopicsAllFragment extends Fragment {
     interface OnItemClickListener {
         void onItemClick(String id);
     }
+
     /* ------------------------------------------------------------------------------------------ */
     /**
         The adapter class receives raw data and inserts every entry into a layout (CardView)

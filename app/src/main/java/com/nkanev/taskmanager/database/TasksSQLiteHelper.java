@@ -34,9 +34,12 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
         insertTopic(db, "Работни");
 
         // add some predefined tasks to the TASKS table
-        insertTask(db, 1, "Домино", "Да наредя 285000 плочки домино");
-        insertTask(db, 2, "Сандвичи", "Да намажа филия с лютеница и сирене и да се почувствам като в доброто старо време");
-        insertTask(db, 3, "Софтуер", "Да се дебъгне приложението за миене на коли");
+        insertTask(db, 1, "Домино", "Да наредя 285000 плочки домино", true);
+        insertTask(db, 1, "Колекция", "Да сортирам колекцията си от дъски за рязане на хляб", false);
+        insertTask(db, 2, "Сандвичи", "Да намажа филия с лютеница и сирене и да се почувствам като в доброто старо време", true);
+        insertTask(db, 2, "Пролетно почистване", "Да избърша от прах долната страна на всяко чекмежде вкъщи", false);
+        insertTask(db, 3, "Дебъгване", "Да се дебъгне приложението за миене на коли", true);
+        insertTask(db, 3, "Разработка", "Да разбера как да имплементирам шаблона Facade в новото си приложение за месене на тесто", false);
     }
 
     @Override
@@ -49,11 +52,12 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
         db.insert(TABLE_TOPICS, null, topic);
     }
 
-    private static void insertTask(SQLiteDatabase db, int topicId, String name, String contents) {
+    private static void insertTask(SQLiteDatabase db, int topicId, String name, String contents, boolean complete) {
         ContentValues task = new ContentValues();
         task.put("name", name);
         task.put("topicId", topicId);
         task.put("contents", contents);
+        task.put("complete", (complete == true) ? 1 : 0);
         db.insert(TABLE_TASKS, null, task);
     }
 
