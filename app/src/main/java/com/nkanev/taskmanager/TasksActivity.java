@@ -4,6 +4,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class TasksActivity extends AppCompatActivity {
+public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener, TasksFragment.OnDataChangeListener{
 
     private int TOPIC_ID;
     public static final String EXTRA_TOPIC_ID = "topicId";
+    ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +35,11 @@ public class TasksActivity extends AppCompatActivity {
 
         TasksPagerAdapter pagerAdapter =
                 new TasksPagerAdapter(getSupportFragmentManager());
-        ViewPager pager = findViewById(R.id.pager_tasks);
-        pager.setAdapter(pagerAdapter);
+        this.pager = findViewById(R.id.pager_tasks);
+        this.pager.setAdapter(pagerAdapter);
 
         TabLayout tabLayout = findViewById(R.id.tabs_tasks);
-        tabLayout.setupWithViewPager(pager);
+        tabLayout.setupWithViewPager(this.pager);
 
     }
 
@@ -56,6 +58,25 @@ public class TasksActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_tasks, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
+    @Override
+    public void onItemClick(String id) {
+
+    }
+
+    @Override
+    public void onDataChanged() {
+
+    }
+
+//    private void refreshTasksFragment() {
+//        // You cannot reattach fragments that have been added to the layout with the
+//        // <fragment> tag, that's why it has been added programmatically in a FrameLayout
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction.detach(this.tasksFragment);
+//        fragmentTransaction.attach(this.tasksFragment);
+//        fragmentTransaction.commit();
+//    }
 
     private class TasksPagerAdapter extends FragmentPagerAdapter {
 

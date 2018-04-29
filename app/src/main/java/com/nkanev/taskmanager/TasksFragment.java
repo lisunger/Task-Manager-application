@@ -1,6 +1,7 @@
 package com.nkanev.taskmanager;
 
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -152,6 +153,10 @@ public class TasksFragment extends Fragment {
         void onItemClick(String id);
     }
 
+    interface OnDataChangeListener {
+        public void onDataChanged();
+    }
+
     private class TasksCardsAdapter extends RecyclerView.Adapter<TasksFragment.TasksCardsAdapter.ViewHolder> {
         private String[] taskIds;
         private String[] taskNames;
@@ -198,16 +203,10 @@ public class TasksFragment extends Fragment {
 
             ImageView icon = cardView.findViewById(R.id.icon_completeness);
             if(taskComplete[position].equals("1")) {
-                icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_check_black_48dp));
-                icon.setBackground(getResources().getDrawable(R.drawable.border_green));
-                DrawableCompat.setTint(icon.getDrawable(), ContextCompat.getColor(getActivity(), R.color.colorGreen));
-                icon.setImageAlpha(127);
+                setIconPositive(icon);
             }
             else {
-                icon.setImageDrawable(getResources().getDrawable(R.drawable.ic_close_black_48dp));
-                icon.setBackground(getResources().getDrawable(R.drawable.border_red));
-                DrawableCompat.setTint(icon.getDrawable(), ContextCompat.getColor(getActivity(), R.color.colorRed));
-                icon.setImageAlpha(127);
+                setIconNegative(icon);
             }
 
             cardView.setOnClickListener(new View.OnClickListener() {
@@ -215,6 +214,61 @@ public class TasksFragment extends Fragment {
                     listener.onItemClick(taskIds[position]);
                 }
             });
+
+            icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getActivity(), taskComplete[position], Toast.LENGTH_SHORT).show();
+                    ImageView icon = (ImageView) v;
+                    if(taskComplete[position].equals("1")){
+                        //TODO: refresh fragment
+                        setIconNegative(icon);
+                        changeTaskCompleteness(taskIds[position], false);
+
+                    }
+                    else {
+                        //TODO: refresh fragment
+                        setIconPositive(icon);
+                        changeTaskCompleteness(taskIds[position], true);
+                    }
+                }
+            });
+        }
+
+        private void setIconPositive(ImageView icon) {
+            setIcon(icon, R.drawable.ic_check_black_48dp, R.drawable.border_green, R.color.colorGreen, 127);
+        }
+
+        private void setIconNegative(ImageView icon) {
+            setIcon(icon, R.drawable.ic_close_black_48dp, R.drawable.border_red, R.color.colorRed, 127);
+        }
+
+        private void setIcon(ImageView icon, int imageId, int borderId, int colorId, int alpha) {
+            icon.setImageDrawable(getResources().getDrawable(imageId));
+            icon.setBackground(getResources().getDrawable(borderId));
+            DrawableCompat.setTint(icon.getDrawable(), ContextCompat.getColor(getActivity(), colorId));
+            icon.setImageAlpha(alpha);
+        }
+
+        private void changeTaskCompleteness(String id, boolean completed) {
+            ContentValues values = new ContentValues();
+            values.put("complete", (completed == true) ? 1 : 0);
+
+            SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
+
+            try {
+                SQLiteDatabase db = databaseHelper.getReadableDatabase();
+                db.update(
+                        TasksSQLiteHelper.TABLE_TASKS,
+                        values,
+                        "_id = ?",
+                        new String[] { id });
+
+            } catch (SQLiteException e) {
+                Toast toast = Toast.makeText(getActivity(), "Database unavailable", Toast.LENGTH_LONG);
+                toast.show();
+                databaseHelper.close();
+            }
         }
 
         /* -------------------------------------------------------------------------------------- */
