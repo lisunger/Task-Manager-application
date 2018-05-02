@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_save_task"
+        android:title="@string/save_task_title"
+        android:icon="@drawable/ic_content_save_white_48dp"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom"/>
+</menu>

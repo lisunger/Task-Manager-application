@@ -1,4 +1,4 @@
-package com.nkanev.taskmanager;
+package com.nkanev.taskmanager.topics;
 
 
 import android.content.Intent;
@@ -19,6 +19,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nkanev.taskmanager.R;
+import com.nkanev.taskmanager.tasks.TasksActivity;
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
 import java.util.ArrayList;

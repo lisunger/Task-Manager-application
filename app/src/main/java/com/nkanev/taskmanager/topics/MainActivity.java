@@ -1,4 +1,4 @@
-package com.nkanev.taskmanager;
+package com.nkanev.taskmanager.topics;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.nkanev.taskmanager.R;
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
 public class MainActivity extends AppCompatActivity implements CreateTopicFragment.CreateTopicDialogListener {

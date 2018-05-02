@@ -1,7 +1,8 @@
-package com.nkanev.taskmanager;
+package com.nkanev.taskmanager.tasks;
 
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -21,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nkanev.taskmanager.R;
+import com.nkanev.taskmanager.database.Task;
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
 import java.util.ArrayList;
@@ -29,14 +32,8 @@ import java.util.List;
 
 public class TasksFragment extends Fragment {
 
-    /**
-     * The data the recycler displays:
-     *  tasksData[0]: array with the _ID
-     *  tasksData[1]: array with the NAME
-     *  tasksData[2]: array with the CONTENTS
-     *  tasksData[3]: array with the COMPLETE
-     */
-    private String[][] tasksData = new String[4][];
+    private List<Task> taskList = new ArrayList<Task>();
+
     public static final String TOPIC_ID = "topicId";
     public static final String COMPLETE_LEVEL = "completeness";
     private int topicId;
@@ -50,27 +47,35 @@ public class TasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d("TasksFragment", "onCreateView");
+        Log.d("TasksFragment", "Bundle: " + (savedInstanceState != null));
         RecyclerView tasksRecycler =
                 (RecyclerView) inflater.inflate(R.layout.fragment_tasks_parent, container, false);
         tasksRecycler.setHasFixedSize(true);
 
         // initialize the id of the current topic
         this.topicId = getArguments().getInt(this.TOPIC_ID);
+
+        if(this.topicId == -1 && savedInstanceState != null) {
+            this.topicId = savedInstanceState.getInt("TOPIC_ID");
+        }
+        Log.d("TasksFragment", "TopicId: " + this.topicId);
+
         // initialize if the topic should display only the comlete/incomplete or all tasks
         this.filter = TasksFilter.values()[(getArguments().getInt(this.COMPLETE_LEVEL))];
 
         // load the tasks for the current topicId
-        this.tasksData = loadTasksFromDB();
+        loadTasksFromDB();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         tasksRecycler.setLayoutManager(layoutManager);
 
-        TasksCardsAdapter adapter = new TasksCardsAdapter(this.tasksData, new OnItemClickListener() {
+        TasksCardsAdapter adapter = new TasksCardsAdapter(this.taskList, new OnItemClickListener() {
             @Override
-            public void onItemClick(String id) {
-                //Intent intent = new Intent(getActivity(), TasksActivity.class);
-                //intent.putExtra(TasksActivity.EXTRA_TOPIC_ID, Integer.valueOf(id));
-                //startActivity(intent);
+            public void onItemClick(int id) {
+                Intent intent = new Intent(getActivity(), CreateTaskActivity.class);
+                intent.putExtra(CreateTaskActivity.EXTRA_TASK_ID, id);
+                startActivity(intent);
             }
         });
         tasksRecycler.setAdapter(adapter);
@@ -81,12 +86,10 @@ public class TasksFragment extends Fragment {
     /**
      * @return Array of arrays with the loaded data
      */
-    String[][] loadTasksFromDB() {
-        String[] id = new String[0];
-        String[] name = new String[0];
-        String[] content = new String[0];
-        String[] complete = new String[0];
-        this.tasksData[1] = new String[0];
+    void loadTasksFromDB() {
+
+        //this.taskList.clear();
+
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
 
         String tasksFilter;
@@ -108,34 +111,31 @@ public class TasksFragment extends Fragment {
             if (db != null) {
                 Cursor cursor = db.query(
                         TasksSQLiteHelper.TABLE_TASKS,
-                        new String[]{"_id, name, contents, complete"},
+                        new String[]{"_id, topicId, name, contents, complete"},
                         "topicId = ?" + tasksFilter,
                         new String[]{String.valueOf(this.topicId)},
                         null, null, null, null);
 
                 if (cursor.moveToFirst()) {
+                    Task task = new Task(
+                            cursor.getInt(0),
+                            cursor.getInt(1),
+                            cursor.getString(2),
+                            cursor.getString(3),
+                            cursor.getString(4).equals("1"));
 
-                    List<String> ids = new ArrayList<String>();
-                    List<String> names = new ArrayList<String>();
-                    List<String> contents = new ArrayList<String>();
-                    List<String> completes = new ArrayList<String>();
-
-                    ids.add(cursor.getString(0));
-                    names.add(cursor.getString(1));
-                    contents.add(cursor.getString(2));
-                    completes.add(cursor.getString(3));
+                    this.taskList.add(task);
 
                     while (cursor.moveToNext()) {
-                        ids.add(cursor.getString(0));
-                        names.add(cursor.getString(1));
-                        contents.add(cursor.getString(2));
-                        completes.add(cursor.getString(3));
-                    }
+                        task = new Task(
+                                cursor.getInt(0),
+                                cursor.getInt(1),
+                                cursor.getString(2),
+                                cursor.getString(3),
+                                cursor.getString(4).equals("1"));
 
-                    id = ids.toArray(new String[0]);
-                    name = names.toArray(new String[0]);
-                    content = contents.toArray(new String[0]);
-                    complete = completes.toArray(new String[0]);
+                        this.taskList.add(task);
+                    }
                 }
                 cursor.close();
             }
@@ -145,36 +145,34 @@ public class TasksFragment extends Fragment {
             toast.show();
             databaseHelper.close();
         }
-
-        return new String[][]{id, name, content, complete};
     }
 
     interface OnItemClickListener {
-        void onItemClick(String id);
+        void onItemClick(int id);
     }
 
     interface OnDataChangeListener {
         public void onDataChanged();
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("TOPIC_ID", this.topicId);
+    }
+
     private class TasksCardsAdapter extends RecyclerView.Adapter<TasksFragment.TasksCardsAdapter.ViewHolder> {
-        private String[] taskIds;
-        private String[] taskNames;
-        private String[] taskContents;
-        private String[] taskComplete;
+        private List<Task> tasks;
         private final TasksFragment.OnItemClickListener listener;
 
-        public TasksCardsAdapter(String[][] data, OnItemClickListener listener) {
-            this.taskIds = data[0];
-            this.taskNames = data[1];
-            this.taskContents = data[2];
-            this.taskComplete = data[3];
+        public TasksCardsAdapter(List<Task> tasks, OnItemClickListener listener) {
+            this.tasks = tasks;
             this.listener = listener;
         }
 
         @Override
         public int getItemCount() {
-            return taskNames.length;
+            return tasks.size();
         }
 
         /**
@@ -197,12 +195,12 @@ public class TasksFragment extends Fragment {
             CardView cardView = holder.cardView;
 
             TextView taskName = cardView.findViewById(R.id.card_task_title);
-            taskName.setText(taskNames[position]);
+            taskName.setText(tasks.get(position).getName());
             TextView taskText = cardView.findViewById(R.id.card_task_text);
-            taskText.setText(taskContents[position]);
+            taskText.setText(tasks.get(position).getContents());
 
             ImageView icon = cardView.findViewById(R.id.icon_completeness);
-            if(taskComplete[position].equals("1")) {
+            if(tasks.get(position).isComplete()) {
                 setIconPositive(icon);
             }
             else {
@@ -211,25 +209,25 @@ public class TasksFragment extends Fragment {
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(taskIds[position]);
+                    listener.onItemClick(tasks.get(position).getId());
                 }
             });
 
             icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), taskComplete[position], Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), tasks.get(position).isComplete() + "", Toast.LENGTH_SHORT).show();
                     ImageView icon = (ImageView) v;
-                    if(taskComplete[position].equals("1")){
-                        //TODO: refresh fragment
+                    if(tasks.get(position).isComplete()){
                         setIconNegative(icon);
-                        changeTaskCompleteness(taskIds[position], false);
+                        changeTaskCompleteness(tasks.get(position).getId(), false);
+                        //TODO: refresh fragment
 
                     }
                     else {
-                        //TODO: refresh fragment
                         setIconPositive(icon);
-                        changeTaskCompleteness(taskIds[position], true);
+                        changeTaskCompleteness(tasks.get(position).getId(), true);
+                        //TODO: refresh fragment
                     }
                 }
             });
@@ -250,7 +248,7 @@ public class TasksFragment extends Fragment {
             icon.setImageAlpha(alpha);
         }
 
-        private void changeTaskCompleteness(String id, boolean completed) {
+        private void changeTaskCompleteness(int id, boolean completed) {
             ContentValues values = new ContentValues();
             values.put("complete", (completed == true) ? 1 : 0);
 
@@ -262,7 +260,7 @@ public class TasksFragment extends Fragment {
                         TasksSQLiteHelper.TABLE_TASKS,
                         values,
                         "_id = ?",
-                        new String[] { id });
+                        new String[] { String.valueOf(id) });
 
             } catch (SQLiteException e) {
                 Toast toast = Toast.makeText(getActivity(), "Database unavailable", Toast.LENGTH_LONG);

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.nkanev.taskmanager.TasksActivity">
+    tools:context="com.nkanev.taskmanager.tasks.TasksActivity">
 
      <!--Code for the toolbar and tabs strip at the top-->
     <android.support.design.widget.AppBarLayout

@@ -25,7 +25,7 @@
             android:textAllCaps="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/icon_completeness"/>
+            android:layout_toStartOf="@+id/icon_completeness"/>
 
         <TextView
             android:id="@+id/card_task_text"
@@ -36,7 +36,7 @@
             android:ellipsize="end"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/card_task_title"
-            android:layout_toLeftOf="@+id/icon_completeness"/>
+            android:layout_toStartOf="@+id/icon_completeness"/>
 
 
         <ImageView

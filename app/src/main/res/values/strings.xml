@@ -7,9 +7,7 @@
 
     <string name="create_topic_title">New topic</string>
     <string name="create_task_title">New task</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="save_task_title">Save</string>
 
     <string name="tab_all">All</string>
     <string name="tab_compl">Complete</string>
@@ -24,5 +22,7 @@
 
     <!-- TextViews -->
     <string name="editText_empty_tasks">No tasks</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

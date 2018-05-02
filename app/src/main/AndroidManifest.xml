@@ -11,19 +11,24 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".topics.MainActivity"
             android:label="@string/topics_activity_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".TasksActivity"
-            android:parentActivityName=".MainActivity"
-            android:label="@string/tasks_activity_title"/>
+            android:name=".tasks.TasksActivity"
+            android:label="@string/tasks_activity_title"
+            android:parentActivityName=".topics.MainActivity" />
 
+        <activity
+            android:name=".tasks.CreateTaskActivity"
+            android:label="Create a new task"
+            android:parentActivityName=".tasks.TasksActivity"/>
     </application>
 
 </manifest>
