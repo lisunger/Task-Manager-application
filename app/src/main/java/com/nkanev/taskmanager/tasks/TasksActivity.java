@@ -1,5 +1,6 @@
 package com.nkanev.taskmanager.tasks;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -29,11 +30,19 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
         setContentView(R.layout.activity_tasks);
 
 
-        this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
-        Log.d("TasksActivity++", "bundle: " + (savedInstanceState != null));
-        if(savedInstanceState != null) {
-            this.TOPIC_ID = savedInstanceState.getInt("topicId");
-            Log.d("TasksActivity++", " value in bundle: " + this.TOPIC_ID);
+//        this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
+//        Log.d("TasksActivity++", "bundle: " + (savedInstanceState != null));
+//        if(savedInstanceState != null) {
+//            this.TOPIC_ID = savedInstanceState.getInt("topicId");
+//            Log.d("TasksActivity++", " value in bundle: " + this.TOPIC_ID);
+//        }
+
+        if(getIntent().getIntExtra(EXTRA_TOPIC_ID, -1) != -1) {
+            this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
+        }
+        else {
+            SharedPreferences sharedPrefs = this.getPreferences(MODE_PRIVATE);
+            this.TOPIC_ID = sharedPrefs.getInt("TOPIC_ID", -1);
         }
 
 
@@ -83,7 +92,10 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("TasksActivity++", "onDestroy()");
+        SharedPreferences sharedPref = this.getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor  = sharedPref.edit();
+        editor.putInt("TOPIC_ID", this.TOPIC_ID);
+        editor.commit();
     }
 
     @Override
