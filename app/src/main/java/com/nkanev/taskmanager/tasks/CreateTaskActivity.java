@@ -18,7 +18,11 @@ import com.nkanev.taskmanager.database.TaskDAO;
 public class CreateTaskActivity extends AppCompatActivity {
 
     public static final String EXTRA_TASK_ID = "taskId";
-    private int taskId;
+    public static final String EXTRA_TOPIC_ID = "topicId";
+    public static final String EXTRA_MODE = "mode";
+    private int taskId = -1;
+    private int topicId = -1;
+    private Mode mode;
     private Task currentTask;
 
     private EditText editTextName;
@@ -38,13 +42,38 @@ public class CreateTaskActivity extends AppCompatActivity {
         this.editTextName = findViewById(R.id.input_task_name);
         this.editTextContents = findViewById(R.id.input_task_content);
 
-        this.taskId = getIntent().getExtras().getInt(EXTRA_TASK_ID);
+        // check if a mode is provided - if a new task is being created or old one is being edited
+        try {
+            this.mode = Mode.values()[getIntent().getExtras().getInt(EXTRA_MODE)];
+        } catch(NullPointerException e) {
+            throw new NullPointerException("EXTRA_MODE not set in calling activity");
+        }
 
-        if(this.taskId != 0) {
+        // if you edit an existing item you pass here the taskId
+        // if you create a task you need to provide it with a topicId
+        if(this.mode == Mode.EDIT) {
+            try {
+                this.taskId = getIntent().getExtras().getInt(EXTRA_TASK_ID);
+            } catch(NullPointerException e) {
+                throw new NullPointerException("EXTRA_TASK_ID not set in calling activity");
+            }
+        }
+        else if(this.mode == Mode.CREATE) {
+            try {
+                this.topicId = getIntent().getExtras().getInt(EXTRA_TOPIC_ID);
+            } catch(NullPointerException e) {
+                throw new NullPointerException("EXTRA_TOPIC_ID not set in calling activity");
+            }
+        }
+
+
+        // initialize the currentTask
+        if(this.mode == Mode.EDIT) {
             this.currentTask = TaskDAO.loadTaskFromDB(this, this.taskId);
+            this.topicId = this.currentTask.getTopicId();
             fillTextFields();
         }
-        else{
+        else if(this.mode == Mode.CREATE){
             this.currentTask = new Task();
         }
 
@@ -58,20 +87,25 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()) {
             case R.id.menu_save_task:
 
-                TaskDAO.updateTask(this, this.taskId,
-                        this.editTextName.getText().toString(), this.editTextContents.getText().toString());
-                //TODO: navigate back
+                this.currentTask.setName(this.editTextName.getText().toString());
+                this.currentTask.setContents(this.editTextContents.getText().toString());
+                this.currentTask.setComplete(false);
+                this.currentTask.setTopicId(this.topicId);
+
+                if(this.mode == Mode.CREATE) {
+                    TaskDAO.createTask(this, this.currentTask);
+                }
+                else if(this.mode == Mode.EDIT) {
+                    TaskDAO.updateTask(this, this.currentTask);
+                }
+
+                finish();
                 break;
 
-            case android.R.id.home:
-                Log.d("TasksActivity++", "Up button!");
-                Intent intent = NavUtils.getParentActivityIntent(this);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                NavUtils.navigateUpFromSameTask(this);
-                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -85,4 +119,7 @@ public class CreateTaskActivity extends AppCompatActivity {
         fieldContents.setText(this.currentTask.getContents());
     }
 
+    public enum Mode {
+        EDIT, CREATE
+    }
 }

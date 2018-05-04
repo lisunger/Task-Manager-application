@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.nkanev.taskmanager.R;
 import com.nkanev.taskmanager.database.Task;
+import com.nkanev.taskmanager.database.TaskDAO;
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class TasksFragment extends Fragment {
     public static final String TOPIC_ID = "topicId";
     public static final String COMPLETE_LEVEL = "completeness";
     private int topicId;
-    private TasksFilter filter;
+    private TaskDAO.TasksFilter filter;
 
     public TasksFragment() {
         // Required empty public constructor
@@ -47,8 +48,9 @@ public class TasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("TasksFragment", "onCreateView");
-        Log.d("TasksFragment", "Bundle: " + (savedInstanceState != null));
+
+
+
         RecyclerView tasksRecycler =
                 (RecyclerView) inflater.inflate(R.layout.fragment_tasks_parent, container, false);
         tasksRecycler.setHasFixedSize(true);
@@ -62,97 +64,18 @@ public class TasksFragment extends Fragment {
         Log.d("TasksFragment", "TopicId: " + this.topicId);
 
         // initialize if the topic should display only the comlete/incomplete or all tasks
-        this.filter = TasksFilter.values()[(getArguments().getInt(this.COMPLETE_LEVEL))];
+        this.filter = TaskDAO.TasksFilter.values()[(getArguments().getInt(this.COMPLETE_LEVEL))];
 
         // load the tasks for the current topicId
-        loadTasksFromDB();
+        this.taskList = TaskDAO.loadTasksFromDB(getActivity(), this.topicId, this.filter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         tasksRecycler.setLayoutManager(layoutManager);
 
-        TasksCardsAdapter adapter = new TasksCardsAdapter(this.taskList, new OnItemClickListener() {
-            @Override
-            public void onItemClick(int id) {
-                Intent intent = new Intent(getActivity(), CreateTaskActivity.class);
-                intent.putExtra(CreateTaskActivity.EXTRA_TASK_ID, id);
-                startActivity(intent);
-            }
-        });
+        TasksCardsAdapter adapter = new TasksCardsAdapter(this.taskList, (TasksActivity) getActivity());
         tasksRecycler.setAdapter(adapter);
 
         return tasksRecycler;
-    }
-
-    /**
-     * @return Array of arrays with the loaded data
-     */
-    void loadTasksFromDB() {
-
-        //this.taskList.clear();
-
-        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
-
-        String tasksFilter;
-        switch(this.filter) {
-            case ALL:
-                tasksFilter = "";
-                break;
-            case COMPLETE:
-                tasksFilter = " and complete = 1";
-                break;
-            case INCOMPLETE:
-                tasksFilter = " and complete = 0";
-                break;
-            default:
-                tasksFilter = "";
-        }
-        try {
-            SQLiteDatabase db = databaseHelper.getReadableDatabase();
-            if (db != null) {
-                Cursor cursor = db.query(
-                        TasksSQLiteHelper.TABLE_TASKS,
-                        new String[]{"_id, topicId, name, contents, complete"},
-                        "topicId = ?" + tasksFilter,
-                        new String[]{String.valueOf(this.topicId)},
-                        null, null, null, null);
-
-                if (cursor.moveToFirst()) {
-                    Task task = new Task(
-                            cursor.getInt(0),
-                            cursor.getInt(1),
-                            cursor.getString(2),
-                            cursor.getString(3),
-                            cursor.getString(4).equals("1"));
-
-                    this.taskList.add(task);
-
-                    while (cursor.moveToNext()) {
-                        task = new Task(
-                                cursor.getInt(0),
-                                cursor.getInt(1),
-                                cursor.getString(2),
-                                cursor.getString(3),
-                                cursor.getString(4).equals("1"));
-
-                        this.taskList.add(task);
-                    }
-                }
-                cursor.close();
-            }
-            db.close();
-        } catch (SQLiteException e) {
-            Toast toast = Toast.makeText(getActivity(), "Database unavailable", Toast.LENGTH_LONG);
-            toast.show();
-            databaseHelper.close();
-        }
-    }
-
-    interface OnItemClickListener {
-        void onItemClick(int id);
-    }
-
-    interface OnDataChangeListener {
-        public void onDataChanged();
     }
 
     @Override
@@ -216,19 +139,18 @@ public class TasksFragment extends Fragment {
             icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(getActivity(), tasks.get(position).isComplete() + "", Toast.LENGTH_SHORT).show();
                     ImageView icon = (ImageView) v;
+
                     if(tasks.get(position).isComplete()){
                         setIconNegative(icon);
                         changeTaskCompleteness(tasks.get(position).getId(), false);
-                        //TODO: refresh fragment
-
                     }
                     else {
                         setIconPositive(icon);
                         changeTaskCompleteness(tasks.get(position).getId(), true);
-                        //TODO: refresh fragment
                     }
+
+                    getActivity().recreate();
                 }
             });
         }
@@ -281,7 +203,13 @@ public class TasksFragment extends Fragment {
         }
     }
 
-    public enum TasksFilter {
-        COMPLETE, INCOMPLETE, ALL
+    interface OnItemClickListener {
+        void onItemClick(int id);
     }
+
+    /*
+    interface OnDataChangeListener {
+        public void onDataChanged();
+    }
+    */
 }

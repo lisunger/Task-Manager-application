@@ -28,6 +28,10 @@ public class Task {
         return topicId;
     }
 
+    public void setTopicId(int topicId) {
+        this.topicId = topicId;
+    }
+
     public String getName() {
         return name;
     }

@@ -1,5 +1,6 @@
 package com.nkanev.taskmanager.tasks;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -16,11 +17,15 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.nkanev.taskmanager.R;
+import com.nkanev.taskmanager.database.TaskDAO;
 
-public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener, TasksFragment.OnDataChangeListener{
+public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener{
+
+    public static final String EXTRA_TOPIC_ID = "topicId";
+    private static final int CODE_EDIT_TASK = 1;
+    private static final int CODE_CREATE_TASK = 2;
 
     private int TOPIC_ID;
-    public static final String EXTRA_TOPIC_ID = "topicId";
     ViewPager pager;
 
     @Override
@@ -28,14 +33,6 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
         super.onCreate(savedInstanceState);
         Log.d("TasksActivity++", "onCreate()");
         setContentView(R.layout.activity_tasks);
-
-
-//        this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
-//        Log.d("TasksActivity++", "bundle: " + (savedInstanceState != null));
-//        if(savedInstanceState != null) {
-//            this.TOPIC_ID = savedInstanceState.getInt("topicId");
-//            Log.d("TasksActivity++", " value in bundle: " + this.TOPIC_ID);
-//        }
 
         if(getIntent().getIntExtra(EXTRA_TOPIC_ID, -1) != -1) {
             this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
@@ -67,7 +64,10 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_new_topic:
-                Toast.makeText(this, "Изморих се от задачи!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, CreateTaskActivity.class);
+                intent.putExtra(CreateTaskActivity.EXTRA_MODE, CreateTaskActivity.Mode.CREATE.ordinal());
+                intent.putExtra(CreateTaskActivity.EXTRA_TOPIC_ID, TOPIC_ID);
+                startActivityForResult(intent, CODE_CREATE_TASK);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -81,13 +81,26 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
 
     @Override
     public void onItemClick(int id) {
+        Log.d("lisko", "ItemClicked: " + id);
+        Intent intent = new Intent(this, CreateTaskActivity.class);
+        intent.putExtra(CreateTaskActivity.EXTRA_MODE, CreateTaskActivity.Mode.EDIT);
+        intent.putExtra(CreateTaskActivity.EXTRA_TASK_ID, id);
+        startActivityForResult(intent, this.CODE_EDIT_TASK);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+        this.recreate();
 
     }
 
+    /*
     @Override
     public void onDataChanged() {
         //TODO: refresh all fragments
     }
+    */
 
     @Override
     protected void onDestroy() {
@@ -127,16 +140,16 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
 
             switch (position) {
                 case 0:
-                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.ALL.ordinal());
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TaskDAO.TasksFilter.ALL.ordinal());
                     break;
                 case 1:
-                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.COMPLETE.ordinal());
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TaskDAO.TasksFilter.COMPLETE.ordinal());
                     break;
                 case 2:
-                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.INCOMPLETE.ordinal());
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TaskDAO.TasksFilter.INCOMPLETE.ordinal());
                     break;
                 default:
-                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TasksFragment.TasksFilter.ALL.ordinal());
+                    bundle.putInt(TasksFragment.COMPLETE_LEVEL, TaskDAO.TasksFilter.ALL.ordinal());
                     break;
             }
 
