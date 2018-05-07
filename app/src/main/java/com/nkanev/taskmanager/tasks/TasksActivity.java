@@ -10,16 +10,20 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.nkanev.taskmanager.R;
 import com.nkanev.taskmanager.database.TaskDAO;
 
-public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener{
+public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener, TasksFragment.OnDataChangeListener{
 
     public static final String EXTRA_TOPIC_ID = "topicId";
     private static final int CODE_EDIT_TASK = 1;
@@ -90,17 +94,14 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
-        this.recreate();
+        this.onDataChanged();
 
     }
 
-    /*
     @Override
     public void onDataChanged() {
-        //TODO: refresh all fragments
+        this.recreate();
     }
-    */
 
     @Override
     protected void onDestroy() {

@@ -15,7 +15,10 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,6 +33,7 @@ import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+//this.selectedCard.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
 
 public class TasksFragment extends Fragment {
 
@@ -40,6 +44,8 @@ public class TasksFragment extends Fragment {
     private int topicId;
     private TaskDAO.TasksFilter filter;
 
+    private CardView clickedItem = null;
+
     public TasksFragment() {
         // Required empty public constructor
     }
@@ -48,8 +54,6 @@ public class TasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
 
         RecyclerView tasksRecycler =
                 (RecyclerView) inflater.inflate(R.layout.fragment_tasks_parent, container, false);
@@ -84,6 +88,34 @@ public class TasksFragment extends Fragment {
         outState.putInt("TOPIC_ID", this.topicId);
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        this.clickedItem = ((CardView) v);
+        this.clickedItem.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
+
+        menu.add(Menu.NONE, v.getId(), Menu.NONE, "Delete");
+        menu.add(Menu.NONE, v.getId(), Menu.NONE, "Move to another category");
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        if (item.getTitle().equals("Delete")) {
+            // TODO write a delete method in the DAO
+        }
+        else if(item.getTitle().equals("Move to another category")) {
+            // TODO write a method in the DAO
+        }
+        else {
+            Toast.makeText(getActivity(), "Menu closed", Toast.LENGTH_SHORT).show();
+            return  false;
+        }
+
+        return true;
+    }
+
     private class TasksCardsAdapter extends RecyclerView.Adapter<TasksFragment.TasksCardsAdapter.ViewHolder> {
         private List<Task> tasks;
         private final TasksFragment.OnItemClickListener listener;
@@ -107,6 +139,7 @@ public class TasksFragment extends Fragment {
             CardView cardView = (CardView) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.card_task, parent, false);
 
+            registerForContextMenu(cardView);
             return new ViewHolder(cardView);
         }
 
@@ -115,7 +148,8 @@ public class TasksFragment extends Fragment {
          */
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
-            CardView cardView = holder.cardView;
+            final CardView cardView = holder.cardView;
+            cardView.setId(tasks.get(position).getId());
 
             TextView taskName = cardView.findViewById(R.id.card_task_title);
             taskName.setText(tasks.get(position).getName());
@@ -143,14 +177,14 @@ public class TasksFragment extends Fragment {
 
                     if(tasks.get(position).isComplete()){
                         setIconNegative(icon);
-                        changeTaskCompleteness(tasks.get(position).getId(), false);
+                        TaskDAO.changeTaskCompleteness(getActivity(), tasks.get(position).getId(), false);
                     }
                     else {
                         setIconPositive(icon);
-                        changeTaskCompleteness(tasks.get(position).getId(), true);
+                        TaskDAO.changeTaskCompleteness(getActivity(), tasks.get(position).getId(), true);
                     }
 
-                    getActivity().recreate();
+                    ((OnDataChangeListener)getActivity()).onDataChanged();
                 }
             });
         }
@@ -170,26 +204,6 @@ public class TasksFragment extends Fragment {
             icon.setImageAlpha(alpha);
         }
 
-        private void changeTaskCompleteness(int id, boolean completed) {
-            ContentValues values = new ContentValues();
-            values.put("complete", (completed == true) ? 1 : 0);
-
-            SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
-
-            try {
-                SQLiteDatabase db = databaseHelper.getReadableDatabase();
-                db.update(
-                        TasksSQLiteHelper.TABLE_TASKS,
-                        values,
-                        "_id = ?",
-                        new String[] { String.valueOf(id) });
-
-            } catch (SQLiteException e) {
-                Toast toast = Toast.makeText(getActivity(), "Database unavailable", Toast.LENGTH_LONG);
-                toast.show();
-                databaseHelper.close();
-            }
-        }
 
         /* -------------------------------------------------------------------------------------- */
         public class ViewHolder extends RecyclerView.ViewHolder {
@@ -207,9 +221,9 @@ public class TasksFragment extends Fragment {
         void onItemClick(int id);
     }
 
-    /*
+
     interface OnDataChangeListener {
-        public void onDataChanged();
+        void onDataChanged();
     }
-    */
+
 }

@@ -183,6 +183,26 @@ public class TaskDAO {
         }
     }
 
+    public static void changeTaskCompleteness(Context context, int taskId, boolean completed) {
+        ContentValues values = new ContentValues();
+        values.put("complete", (completed == true) ? 1 : 0);
+
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
+
+        try {
+            SQLiteDatabase db = databaseHelper.getReadableDatabase();
+            db.update(
+                    TasksSQLiteHelper.TABLE_TASKS,
+                    values,
+                    "_id = ?",
+                    new String[] { String.valueOf(taskId) });
+
+        } catch (SQLiteException e) {
+            Toast.makeText(context, "Database unavailable", Toast.LENGTH_LONG).show();
+            databaseHelper.close();
+        }
+    }
+
     public enum TasksFilter {
         COMPLETE, INCOMPLETE, ALL
     }
