@@ -1,4 +1,4 @@
-package com.nkanev.taskmanager.topics;
+package com.nkanev.taskmanager.categories;
 
 
 import android.app.AlertDialog;
@@ -19,12 +19,12 @@ import com.nkanev.taskmanager.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CreateTopicFragment extends DialogFragment {
+public class CreateCategoryFragment extends DialogFragment {
 
-    private CreateTopicDialogListener listener;
-    private EditText editTextNewTopic;
+    private CreateCategoryDialogListener listener;
+    private EditText editTextNewCategory;
 
-    public CreateTopicFragment() {
+    public CreateCategoryFragment() {
         // Required empty public constructor
     }
 
@@ -35,15 +35,15 @@ public class CreateTopicFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        builder.setTitle(R.string.new_topic_fragment_title);
-        View view = inflater.inflate(R.layout.fragment_new_topic, null);
-        editTextNewTopic = view.findViewById(R.id.editText_new_topic);
+        builder.setTitle(R.string.new_category_fragment_title);
+        View view = inflater.inflate(R.layout.fragment_new_category, null);
+        editTextNewCategory = view.findViewById(R.id.editText_new_category);
         builder.setView(view);
 
         builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                listener.onDialogPositiveClick(editTextNewTopic.getText().toString());
+                listener.onDialogPositiveClick(editTextNewCategory.getText().toString());
             }
         });
 
@@ -71,14 +71,14 @@ public class CreateTopicFragment extends DialogFragment {
         super.onAttach(context);
 
         try {
-            listener = (CreateTopicDialogListener) context;
+            listener = (CreateCategoryDialogListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement CreateTopicDialogListener");
+                    + " must implement CreateCategoryDialogListener");
         }
     }
 
-    public interface CreateTopicDialogListener {
+    public interface CreateCategoryDialogListener {
         public void onDialogPositiveClick(String text);
     }
 

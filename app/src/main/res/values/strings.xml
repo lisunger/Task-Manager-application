@@ -1,11 +1,11 @@
 <resources>
     <string name="app_name">Task Manager</string>
 
-    <string name="topics_activity_title">Topics</string>
+    <string name="categories_activity_title">Categories</string>
     <string name="tasks_activity_title">Tasks</string>
-    <string name="new_topic_fragment_title">New topic</string>
+    <string name="new_category_fragment_title">New category</string>
 
-    <string name="create_topic_title">New topic</string>
+    <string name="create_category_title">New category</string>
     <string name="create_task_title">New task</string>
     <string name="save_task_title">Save</string>
     <string name="delete_title">Delete</string>
@@ -19,11 +19,9 @@
     <string name="button_cancel">Cancel</string>
 
     <!-- Image descriptions -->
-    <string name="desc_topic_icon">Topic icon</string>
+    <string name="desc_category_icon">Category icon</string>
 
     <!-- TextViews -->
     <string name="editText_empty_tasks">No tasks</string>
-
-    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
 
 </resources>

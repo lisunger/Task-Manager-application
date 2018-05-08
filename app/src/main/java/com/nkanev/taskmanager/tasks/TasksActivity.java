@@ -25,32 +25,31 @@ import com.nkanev.taskmanager.database.TaskDAO;
 
 public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener, TasksFragment.OnDataChangeListener{
 
-    public static final String EXTRA_TOPIC_ID = "topicId";
-    public static final String EXTRA_TOPIC_NAME = "topicName";
+    public static final String EXTRA_CATEGORY_ID = "categoryId";
+    public static final String EXTRA_CATEGORY_NAME = "categoryName";
     private static final int CODE_EDIT_TASK = 1;
     private static final int CODE_CREATE_TASK = 2;
 
-    private int TOPIC_ID;
-    private String TOPIC_NAME;
+    private int CATEGORY_ID;
+    private String CATEGORY_NAME;
     ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TasksActivity++", "onCreate()");
         setContentView(R.layout.activity_tasks);
 
-        if(getIntent().getIntExtra(EXTRA_TOPIC_ID, -1) != -1) {
-            this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
-            this.TOPIC_NAME = getIntent().getStringExtra(EXTRA_TOPIC_NAME);
+        if(getIntent().getIntExtra(EXTRA_CATEGORY_ID, -1) != -1) {
+            this.CATEGORY_ID = getIntent().getIntExtra(EXTRA_CATEGORY_ID, -1);
+            this.CATEGORY_NAME = getIntent().getStringExtra(EXTRA_CATEGORY_NAME);
         }
         else {
             SharedPreferences sharedPrefs = this.getPreferences(MODE_PRIVATE);
-            this.TOPIC_ID = sharedPrefs.getInt("TOPIC_ID", -1);
-            this.TOPIC_NAME = sharedPrefs.getString("TOPIC_NAME", "");
+            this.CATEGORY_ID = sharedPrefs.getInt("CATEGORY_ID", -1);
+            this.CATEGORY_NAME = sharedPrefs.getString("CATEGORY_NAME", "");
         }
 
-        setTitle(this.TOPIC_NAME);
+        setTitle(this.CATEGORY_NAME);
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -75,7 +74,7 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
             case R.id.menu_new_topic:
                 Intent intent = new Intent(this, CreateTaskActivity.class);
                 intent.putExtra(CreateTaskActivity.EXTRA_MODE, CreateTaskActivity.Mode.CREATE.ordinal());
-                intent.putExtra(CreateTaskActivity.EXTRA_TOPIC_ID, TOPIC_ID);
+                intent.putExtra(CreateTaskActivity.EXTRA_CATEGORY_ID, CATEGORY_ID);
                 startActivityForResult(intent, CODE_CREATE_TASK);
                 break;
         }
@@ -112,23 +111,20 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
         super.onDestroy();
         SharedPreferences sharedPref = this.getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor  = sharedPref.edit();
-        editor.putInt("TOPIC_ID", this.TOPIC_ID);
-        editor.putString("TOPIC_NAME", this.TOPIC_NAME);
+        editor.putInt("CATEGORY_ID", this.CATEGORY_ID);
+        editor.putString("CATEGORY_NAME", this.CATEGORY_NAME);
         editor.apply();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("TasksActivity++", "onSaveInstanceState()");
-        Log.d("TasksActivity++", "onSaveInstanceState(), putting " + this.TOPIC_ID);
-        outState.putInt("topicId", this.TOPIC_ID);
+        outState.putInt("categoryId", this.CATEGORY_ID);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.d("TasksActivity++", "onRestoreInstanceState(), " + (savedInstanceState != null));
     }
 
     private class TasksPagerAdapter extends FragmentPagerAdapter {
@@ -141,7 +137,7 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
         public Fragment getItem(int position) {
 
             Bundle bundle = new Bundle();
-            bundle.putInt(TasksFragment.TOPIC_ID, TOPIC_ID);
+            bundle.putInt(TasksFragment.CATEGORY_ID, CATEGORY_ID);
 
 
             switch (position) {

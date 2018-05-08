@@ -1,12 +1,6 @@
 package com.nkanev.taskmanager.tasks;
 
 
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -14,7 +8,6 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +21,6 @@ import android.widget.Toast;
 import com.nkanev.taskmanager.R;
 import com.nkanev.taskmanager.database.Task;
 import com.nkanev.taskmanager.database.TaskDAO;
-import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +31,9 @@ public class TasksFragment extends Fragment {
 
     private List<Task> taskList = new ArrayList<Task>();
 
-    public static final String TOPIC_ID = "topicId";
+    public static final String CATEGORY_ID = "categoryId";
     public static final String COMPLETE_LEVEL = "completeness";
-    private int topicId;
+    private int categoryId;
     private TaskDAO.TasksFilter filter;
 
     private CardView clickedItem = null;
@@ -60,18 +52,17 @@ public class TasksFragment extends Fragment {
         tasksRecycler.setHasFixedSize(true);
 
         // initialize the id of the current topic
-        this.topicId = getArguments().getInt(this.TOPIC_ID);
+        this.categoryId = getArguments().getInt(this.CATEGORY_ID);
 
-        if(this.topicId == -1 && savedInstanceState != null) {
-            this.topicId = savedInstanceState.getInt("TOPIC_ID");
+        if(this.categoryId == -1 && savedInstanceState != null) {
+            this.categoryId = savedInstanceState.getInt("CATEGORY_ID");
         }
-        Log.d("TasksFragment", "TopicId: " + this.topicId);
 
         // initialize if the topic should display only the comlete/incomplete or all tasks
-        this.filter = TaskDAO.TasksFilter.values()[(getArguments().getInt(this.COMPLETE_LEVEL))];
+        this.filter = TaskDAO.TasksFilter.values()[(getArguments().getInt(COMPLETE_LEVEL))];
 
         // load the tasks for the current topicId
-        this.taskList = TaskDAO.loadTasksFromDB(getActivity(), this.topicId, this.filter);
+        this.taskList = TaskDAO.loadTasksFromDB(getActivity(), this.categoryId, this.filter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         tasksRecycler.setLayoutManager(layoutManager);
@@ -85,7 +76,7 @@ public class TasksFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("TOPIC_ID", this.topicId);
+        outState.putInt("CATEGORY_ID", this.categoryId);
     }
 
     @Override

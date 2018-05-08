@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class TasksSQLiteHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "TASKMANAGER";
-    public static final String TABLE_TOPICS = "TOPICS";
+    public static final String TABLE_CATEGORIES = "CATEGORIES";
     public static final String TABLE_TASKS = "TASKS";
     private static final int DB_VERSION = 1;
 
@@ -25,13 +25,13 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        createTableTopics(db);
+        createTableCategories(db);
         createTableTasks(db);
 
-        // add some predefined topics to the TOPICS table
-        insertTopic(db, "Забавни");
-        insertTopic(db, "Домашни");
-        insertTopic(db, "Работни");
+        // add some predefined categories to the CATEGORIES table
+        insertCategory(db, "Забавни");
+        insertCategory(db, "Домашни");
+        insertCategory(db, "Работни");
 
         // add some predefined tasks to the TASKS table
         insertTask(db, 1, "Домино", "Да наредя 285000 плочки домино", true);
@@ -46,30 +46,30 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     }
 
-    private static void insertTopic(SQLiteDatabase db, String name) {
-        ContentValues topic = new ContentValues();
-        topic.put("name", name);
-        db.insert(TABLE_TOPICS, null, topic);
+    private static void insertCategory(SQLiteDatabase db, String name) {
+        ContentValues category = new ContentValues();
+        category.put("name", name);
+        db.insert(TABLE_CATEGORIES, null, category);
     }
 
-    private static void insertTask(SQLiteDatabase db, int topicId, String name, String contents, boolean complete) {
+    private static void insertTask(SQLiteDatabase db, int categoryId, String name, String contents, boolean complete) {
         ContentValues task = new ContentValues();
         task.put("name", name);
-        task.put("topicId", topicId);
+        task.put("categoryId", categoryId);
         task.put("contents", contents);
         task.put("complete", (complete == true) ? 1 : 0);
         db.insert(TABLE_TASKS, null, task);
     }
 
-    private void createTableTopics(SQLiteDatabase db) {
-        /* create table TOPICS(
+    private void createTableCategories(SQLiteDatabase db) {
+        /* create table CATEGORIES(
              _id integer primary key autoincrement,
              name text not null
            );
         */
         StringBuilder sb = new StringBuilder();
         sb.append("create table ");
-        sb.append(TABLE_TOPICS);
+        sb.append(TABLE_CATEGORIES);
         sb.append("(_id integer primary key autoincrement, name text not null);");
 
         db.execSQL(sb.toString());
@@ -78,22 +78,22 @@ public class TasksSQLiteHelper extends SQLiteOpenHelper {
     private void createTableTasks(SQLiteDatabase db) {
         /* create table TASKS(
              _id integer primary key autoincrement,
-             topicId integer not null,
+             categoryId integer not null,
              name text not null,
              contents text,
              complete integer not null default 0,
-             foreign key(topicId) references TOPICS(_id)
+             foreign key(categoryId) references CATEGORIES(_id)
            );
         */
         StringBuilder sb = new StringBuilder();
         sb.append("create table ");
         sb.append(TABLE_TASKS);
         sb.append("(_id integer primary key autoincrement");
-        sb.append(", topicId integer not null");
+        sb.append(", categoryId integer not null");
         sb.append(", name text not null");
         sb.append(", contents text");
         sb.append(", complete integer not null default 0");
-        sb.append(", foreign key(topicId) references TOPICS(_id));");
+        sb.append(", foreign key(categoryId) references CATEGORIES(_id));");
 
         Log.d("Create table", sb.toString());
 

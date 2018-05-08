@@ -1,12 +1,9 @@
 package com.nkanev.taskmanager.tasks;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -18,10 +15,10 @@ import com.nkanev.taskmanager.database.TaskDAO;
 public class CreateTaskActivity extends AppCompatActivity {
 
     public static final String EXTRA_TASK_ID = "taskId";
-    public static final String EXTRA_TOPIC_ID = "topicId";
+    public static final String EXTRA_CATEGORY_ID = "categoryId";
     public static final String EXTRA_MODE = "mode";
     private int taskId = -1;
-    private int topicId = -1;
+    private int categoryId = -1;
     private Mode mode;
     private Task currentTask;
 
@@ -50,7 +47,7 @@ public class CreateTaskActivity extends AppCompatActivity {
         }
 
         // if you edit an existing item you pass here the taskId
-        // if you create a task you need to provide it with a topicId
+        // if you create a task you need to provide it with a categoryId
         if(this.mode == Mode.EDIT) {
             try {
                 this.taskId = getIntent().getExtras().getInt(EXTRA_TASK_ID);
@@ -60,9 +57,9 @@ public class CreateTaskActivity extends AppCompatActivity {
         }
         else if(this.mode == Mode.CREATE) {
             try {
-                this.topicId = getIntent().getExtras().getInt(EXTRA_TOPIC_ID);
+                this.categoryId = getIntent().getExtras().getInt(EXTRA_CATEGORY_ID);
             } catch(NullPointerException e) {
-                throw new NullPointerException("EXTRA_TOPIC_ID not set in calling activity");
+                throw new NullPointerException("EXTRA_CATEGORY_ID not set in calling activity");
             }
         }
 
@@ -70,7 +67,7 @@ public class CreateTaskActivity extends AppCompatActivity {
         // initialize the currentTask
         if(this.mode == Mode.EDIT) {
             this.currentTask = TaskDAO.loadTaskFromDB(this, this.taskId);
-            this.topicId = this.currentTask.getTopicId();
+            this.categoryId = this.currentTask.getCategoryId();
             fillTextFields();
         }
         else if(this.mode == Mode.CREATE){
@@ -94,7 +91,7 @@ public class CreateTaskActivity extends AppCompatActivity {
                 this.currentTask.setName(this.editTextName.getText().toString());
                 this.currentTask.setContents(this.editTextContents.getText().toString());
                 this.currentTask.setComplete(false);
-                this.currentTask.setTopicId(this.topicId);
+                this.currentTask.setCategoryId(this.categoryId);
 
                 if(this.mode == Mode.CREATE) {
                     TaskDAO.createTask(this, this.currentTask);

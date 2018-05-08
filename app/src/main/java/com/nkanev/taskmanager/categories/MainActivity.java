@@ -1,4 +1,4 @@
-package com.nkanev.taskmanager.topics;
+package com.nkanev.taskmanager.categories;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,11 +17,11 @@ import android.widget.Toast;
 import com.nkanev.taskmanager.R;
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 
-public class MainActivity extends AppCompatActivity implements CreateTopicFragment.CreateTopicDialogListener {
+public class MainActivity extends AppCompatActivity implements CreateCategoryFragment.CreateCategoryDialogListener {
 
     private static final String TAG = "MainActivity";
     private Toast toast;
-    private TopicsFragment topicsFragment;
+    private CategoriesFragment categoriesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
         setContentView(R.layout.activity_main);
 
         // The fragment is added programmatically so that it can be reattached later
-        this.topicsFragment = new TopicsFragment();
+        this.categoriesFragment = new CategoriesFragment();
         FragmentManager manager = getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.container_fragment_topics, this.topicsFragment);
+        transaction.add(R.id.container_fragment_categories, this.categoriesFragment);
         transaction.commit();
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
@@ -48,27 +48,27 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_new_topic:
-                CreateTopicFragment f = new CreateTopicFragment();
+            case R.id.menu_new_category:
+                CreateCategoryFragment f = new CreateCategoryFragment();
                 f.show(getSupportFragmentManager(), TAG);
         }
         return super.onOptionsItemSelected(item);
     }
 
     /**
-     * Add the title to the TOPICS table as a new topic
+     * Add the title to the CATEGORIES table as a new topic
      *
-     * @param title the name of the new topic
-     * @return <code>true</code> if the topic has been added successfully
+     * @param title the name of the new category
+     * @return <code>true</code> if the category has been added successfully
      */
-    private boolean addTopicToDB(String title) {
+    private boolean addCategoryToDB(String title) {
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(this);
         long newId = -1;
         try {
             SQLiteDatabase db = databaseHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put("name", title);
-            newId = db.insert(TasksSQLiteHelper.TABLE_TOPICS, null, values);
+            newId = db.insert(TasksSQLiteHelper.TABLE_CATEGORIES, null, values);
         } catch (SQLiteException e) {
             showToast("Database error");
         } finally {
@@ -77,12 +77,12 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
         return newId != -1;
     }
 
-    private void refreshTopicsFragment() {
+    private void refreshCategoriesFragment() {
         // You cannot reattach fragments that have been added to the layout with the
         // <fragment> tag, that's why it has been added programmatically in a FrameLayout
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.detach(this.topicsFragment);
-        fragmentTransaction.attach(this.topicsFragment);
+        fragmentTransaction.detach(this.categoriesFragment);
+        fragmentTransaction.attach(this.categoriesFragment);
         fragmentTransaction.commit();
     }
 
@@ -97,16 +97,16 @@ public class MainActivity extends AppCompatActivity implements CreateTopicFragme
     @Override
     public void onDialogPositiveClick(String text) {
         Log.i(TAG, text);
-        // Create a new topic in the database with the given name
+        // Create a new category in the database with the given name
         if (text != null && text.trim().length() > 0) {
-            boolean topicCreated = addTopicToDB(text);
+            boolean categoryCreated = addCategoryToDB(text);
 
-            if (topicCreated) {
+            if (categoryCreated) {
                 showToast("Topic created");
             } else {
-                showToast("Error when creating new topic");
+                showToast("Error when creating new Category");
             }
-            refreshTopicsFragment();
+            refreshCategoriesFragment();
         }
     }
 

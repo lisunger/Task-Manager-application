@@ -1,4 +1,4 @@
-package com.nkanev.taskmanager.topics;
+package com.nkanev.taskmanager.categories;
 
 
 import android.content.Intent;
@@ -26,17 +26,17 @@ import com.nkanev.taskmanager.database.TasksSQLiteHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TopicsFragment extends Fragment {
+public class CategoriesFragment extends Fragment {
 
     /**
      * The data the recycler displays:
-     *  topicsData[0]: array with the _ID
-     *  topicsData[1]: array with the NAME
+     *  categoriesData[0]: array with the _ID
+     *  categoriesData[1]: array with the NAME
      */
-    private String[][] topicsData = new String[2][];
+    private String[][] categoriesData = new String[2][];
     private static Toast toast;
 
-    public TopicsFragment() {
+    public CategoriesFragment() {
         // Required empty public constructor
     }
 
@@ -46,21 +46,21 @@ public class TopicsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         RecyclerView topicsRecycler =
-                (RecyclerView) inflater.inflate(R.layout.fragment_all_topics, container, false);
+                (RecyclerView) inflater.inflate(R.layout.fragment_all_categories, container, false);
         topicsRecycler.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         topicsRecycler.setLayoutManager(layoutManager);
 
-        this.topicsData = loadTopicsFromDB();
+        this.categoriesData = loadCategoriesFromDB();
 
-        TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.topicsData, new OnItemClickListener() {
+        TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.categoriesData, new OnItemClickListener() {
             @Override
             public void onItemClick(String id, String name) {
                 Log.d("Click!", "Position: " + id);
                 Intent intent = new Intent(getActivity(), TasksActivity.class);
-                intent.putExtra(TasksActivity.EXTRA_TOPIC_ID, Integer.valueOf(id));
-                intent.putExtra(TasksActivity.EXTRA_TOPIC_NAME, name);
+                intent.putExtra(TasksActivity.EXTRA_CATEGORY_ID, Integer.valueOf(id));
+                intent.putExtra(TasksActivity.EXTRA_CATEGORY_NAME, name);
                 startActivity(intent);
             }
         });
@@ -70,16 +70,16 @@ public class TopicsFragment extends Fragment {
     }
 
     @NonNull
-    private String[][] loadTopicsFromDB() {
+    private String[][] loadCategoriesFromDB() {
         String[] id = new String[0];
         String[] name = new String[0];
-        this.topicsData[1] = new String[0];
+        this.categoriesData[1] = new String[0];
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
 
         try {
             SQLiteDatabase db = databaseHelper.getReadableDatabase();
             if (db != null) {
-                Cursor cursor = db.query(TasksSQLiteHelper.TABLE_TOPICS, new String[]{"_id, name"}, null, null, null, null, null, null);
+                Cursor cursor = db.query(TasksSQLiteHelper.TABLE_CATEGORIES, new String[]{"_id, name"}, null, null, null, null, null, null);
 
                 if (cursor.moveToFirst()) {
                     List<String> names = new ArrayList<String>();
@@ -106,7 +106,7 @@ public class TopicsFragment extends Fragment {
         return new String[][]{id, name};
     }
 
-    private int getItemsByTopic(String topicId, boolean complete) {
+    private int getItemsByCategory(String categoryId, boolean complete) {
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(getActivity());
         int count = -1;
         String completeAsString = (complete) ? "1" : "0";
@@ -118,8 +118,8 @@ public class TopicsFragment extends Fragment {
                 count = db.query(
                         TasksSQLiteHelper.TABLE_TASKS,
                         null,
-                        "topicId = ? and complete = ?",
-                        new String[]{ topicId, completeAsString },
+                        "categoryId = ? and complete = ?",
+                        new String[]{ categoryId, completeAsString },
                         null, null, null, null)
                         .getCount();
 
@@ -144,19 +144,19 @@ public class TopicsFragment extends Fragment {
      */
     private class TopicsCardsAdapter extends RecyclerView.Adapter<TopicsCardsAdapter.ViewHolder> {
 
-        private String[] topicIds;
-        private String[] topicNames;
+        private String[] categoryIds;
+        private String[] categoryNames;
         private final OnItemClickListener listener;
 
         public TopicsCardsAdapter(String[][] data, OnItemClickListener listener) {
-            this.topicIds = data[0];
-            this.topicNames = data[1];
+            this.categoryIds = data[0];
+            this.categoryNames = data[1];
             this.listener = listener;
         }
 
         @Override
         public int getItemCount() {
-            return topicNames.length;
+            return categoryNames.length;
         }
 
         /**
@@ -166,7 +166,7 @@ public class TopicsFragment extends Fragment {
         @Override
         public TopicsCardsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             CardView cardView = (CardView) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.card_topic, parent, false);
+                    .inflate(R.layout.card_category, parent, false);
 
             return new ViewHolder(cardView);
         }
@@ -177,18 +177,18 @@ public class TopicsFragment extends Fragment {
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             CardView cardView = holder.cardView;
-            TextView topicName = cardView.findViewById(R.id.card_topic_name);
-            topicName.setText(topicNames[position]);
+            TextView topicName = cardView.findViewById(R.id.card_category_name);
+            topicName.setText(categoryNames[position]);
 
             TextView complete = cardView.findViewById(R.id.text_complete_tasks);
             TextView incomplete = cardView.findViewById(R.id.text_incomplete_tasks);
 
-            complete.setText(String.valueOf(getItemsByTopic(topicIds[position], true)));
-            incomplete.setText(String.valueOf(getItemsByTopic(topicIds[position], false)));
+            complete.setText(String.valueOf(getItemsByCategory(categoryIds[position], true)));
+            incomplete.setText(String.valueOf(getItemsByCategory(categoryIds[position], false)));
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(topicIds[position], topicNames[position]);
+                    listener.onItemClick(categoryIds[position], categoryNames[position]);
                 }
             });
         }

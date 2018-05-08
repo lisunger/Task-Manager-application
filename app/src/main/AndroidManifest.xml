@@ -11,8 +11,8 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".topics.MainActivity"
-            android:label="@string/topics_activity_title">
+            android:name=".categories.MainActivity"
+            android:label="@string/categories_activity_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,7 +23,7 @@
         <activity
             android:name=".tasks.TasksActivity"
             android:label="@string/tasks_activity_title"
-            android:parentActivityName=".topics.MainActivity" />
+            android:parentActivityName=".categories.MainActivity" />
 
         <activity
             android:name=".tasks.CreateTaskActivity"

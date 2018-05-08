@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_new_topic"
-        android:title="@string/create_topic_title"
+        android:id="@+id/menu_new_category"
+        android:title="@string/create_category_title"
         android:icon="@drawable/ic_plus_white_48dp"
         android:orderInCategory="1"
         app:showAsAction="ifRoom"/>

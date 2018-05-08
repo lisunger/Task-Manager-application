@@ -3,7 +3,7 @@ package com.nkanev.taskmanager.database;
 public class Task {
 
     private int id;
-    private int topicId;
+    private int categoryId;
     private String name;
     private String contents;
     private boolean complete;
@@ -12,9 +12,9 @@ public class Task {
 
     }
 
-    public Task(int id, int topicId, String name, String contents, boolean complete) {
+    public Task(int id, int categoryId, String name, String contents, boolean complete) {
         this.id = id;
-        this.topicId = topicId;
+        this.categoryId = categoryId;
         this.name = name;
         this.contents = contents;
         this.complete = complete;
@@ -24,12 +24,12 @@ public class Task {
         return id;
     }
 
-    public int getTopicId() {
-        return topicId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setTopicId(int topicId) {
-        this.topicId = topicId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getName() {

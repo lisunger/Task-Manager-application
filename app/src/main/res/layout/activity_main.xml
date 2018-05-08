@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.nkanev.taskmanager.topics.MainActivity">
+    tools:context="com.nkanev.taskmanager.categories.MainActivity">
 
     <!-- Code for the toolbar and tabs strip at the top -->
     <android.support.design.widget.AppBarLayout
@@ -18,9 +18,9 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <!-- The main content of the activity - the topics fragment -->
+    <!-- The main content of the activity - the categories fragment -->
     <FrameLayout
-        android:id="@+id/container_fragment_topics"
+        android:id="@+id/container_fragment_categories"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

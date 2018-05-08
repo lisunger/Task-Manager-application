@@ -25,7 +25,7 @@ public class TaskDAO {
             values.put("name", task.getName());
             values.put("contents", task.getContents());
             values.put("complete", task.isComplete());
-            values.put("topicId", task.getTopicId());
+            values.put("categoryId", task.getCategoryId());
 
             db.insert(
                 TasksSQLiteHelper.TABLE_TASKS,
@@ -55,7 +55,7 @@ public class TaskDAO {
 
             cursor = db.query(
                     TasksSQLiteHelper.TABLE_TASKS,
-                    new String[]{"_id, topicId, name, contents, complete"},
+                    new String[]{"_id, categoryId, name, contents, complete"},
                     "_id = ?",
                     new String[]{String.valueOf(taskId)},
                     null, null, null, null);
@@ -91,7 +91,7 @@ public class TaskDAO {
      * @param filter return the tasks that are either complete, incomplete or all of them
      * @return List with tasks
      */
-    public static List<Task> loadTasksFromDB(Context context, final int topicId, TasksFilter filter) {
+    public static List<Task> loadTasksFromDB(Context context, final int categoryId, TasksFilter filter) {
 
         List<Task> taskList = new ArrayList<Task>();
 
@@ -117,9 +117,9 @@ public class TaskDAO {
             if (db != null) {
                 Cursor cursor = db.query(
                         TasksSQLiteHelper.TABLE_TASKS,
-                        new String[]{"_id, topicId, name, contents, complete"},
-                        "topicId = ?" + tasksFilter,
-                        new String[]{String.valueOf(topicId)},
+                        new String[]{"_id, categoryId, name, contents, complete"},
+                        "categoryId = ?" + tasksFilter,
+                        new String[]{String.valueOf(categoryId)},
                         null, null, null, null);
 
                 if (cursor.moveToFirst()) {
