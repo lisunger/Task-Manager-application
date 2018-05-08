@@ -56,10 +56,11 @@ public class TopicsFragment extends Fragment {
 
         TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.topicsData, new OnItemClickListener() {
             @Override
-            public void onItemClick(String id) {
+            public void onItemClick(String id, String name) {
                 Log.d("Click!", "Position: " + id);
                 Intent intent = new Intent(getActivity(), TasksActivity.class);
                 intent.putExtra(TasksActivity.EXTRA_TOPIC_ID, Integer.valueOf(id));
+                intent.putExtra(TasksActivity.EXTRA_TOPIC_NAME, name);
                 startActivity(intent);
             }
         });
@@ -134,7 +135,7 @@ public class TopicsFragment extends Fragment {
     }
 
     interface OnItemClickListener {
-        void onItemClick(String id);
+        void onItemClick(String id, String name);
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -187,7 +188,7 @@ public class TopicsFragment extends Fragment {
 
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(topicIds[position]);
+                    listener.onItemClick(topicIds[position], topicNames[position]);
                 }
             });
         }

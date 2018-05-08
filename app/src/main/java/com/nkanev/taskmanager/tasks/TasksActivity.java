@@ -26,10 +26,12 @@ import com.nkanev.taskmanager.database.TaskDAO;
 public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener, TasksFragment.OnDataChangeListener{
 
     public static final String EXTRA_TOPIC_ID = "topicId";
+    public static final String EXTRA_TOPIC_NAME = "topicName";
     private static final int CODE_EDIT_TASK = 1;
     private static final int CODE_CREATE_TASK = 2;
 
     private int TOPIC_ID;
+    private String TOPIC_NAME;
     ViewPager pager;
 
     @Override
@@ -40,12 +42,15 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
 
         if(getIntent().getIntExtra(EXTRA_TOPIC_ID, -1) != -1) {
             this.TOPIC_ID = getIntent().getIntExtra(EXTRA_TOPIC_ID, -1);
+            this.TOPIC_NAME = getIntent().getStringExtra(EXTRA_TOPIC_NAME);
         }
         else {
             SharedPreferences sharedPrefs = this.getPreferences(MODE_PRIVATE);
             this.TOPIC_ID = sharedPrefs.getInt("TOPIC_ID", -1);
+            this.TOPIC_NAME = sharedPrefs.getString("TOPIC_NAME", "");
         }
 
+        setTitle(this.TOPIC_NAME);
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -85,11 +90,10 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
 
     @Override
     public void onItemClick(int id) {
-        Log.d("lisko", "ItemClicked: " + id);
         Intent intent = new Intent(this, CreateTaskActivity.class);
         intent.putExtra(CreateTaskActivity.EXTRA_MODE, CreateTaskActivity.Mode.EDIT);
         intent.putExtra(CreateTaskActivity.EXTRA_TASK_ID, id);
-        startActivityForResult(intent, this.CODE_EDIT_TASK);
+        startActivityForResult(intent, CODE_EDIT_TASK);
     }
 
     @Override
@@ -109,7 +113,8 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
         SharedPreferences sharedPref = this.getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor  = sharedPref.edit();
         editor.putInt("TOPIC_ID", this.TOPIC_ID);
-        editor.commit();
+        editor.putString("TOPIC_NAME", this.TOPIC_NAME);
+        editor.apply();
     }
 
     @Override
