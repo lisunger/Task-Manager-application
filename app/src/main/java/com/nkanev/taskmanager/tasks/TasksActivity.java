@@ -1,5 +1,6 @@
 package com.nkanev.taskmanager.tasks;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +23,14 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.nkanev.taskmanager.R;
+import com.nkanev.taskmanager.database.Category;
+import com.nkanev.taskmanager.database.CategoryDAO;
 import com.nkanev.taskmanager.database.TaskDAO;
+import com.nkanev.taskmanager.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TasksActivity extends AppCompatActivity implements TasksFragment.OnItemClickListener, TasksFragment.OnDataChangeListener{
 
@@ -96,6 +105,39 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
     }
 
     @Override
+    public void onItemLongClick(final int taskId, final CardView cardView) {
+        // make cardView yellow
+        cardView.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
+
+        // TODO Create dialog with options
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Options");
+        builder.setItems(R.array.contextMenuOptions, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which) {
+                    case 0:
+                        showMoveDialog(taskId);
+                        break;
+                    case 1:
+                        showDeleteDialog(taskId);
+                        break;
+                }
+            }
+        });
+
+        // change the task's color back to white when menu closed
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                cardView.setCardBackgroundColor(getResources().getColor(android.R.color.white));
+            }
+        });
+
+        builder.create().show();
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         this.onDataChanged();
 
@@ -125,6 +167,51 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    private void showDeleteDialog(final int taskId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.confirmDeleteTitle);
+
+        builder.setPositiveButton(R.string.confirmDeleteOK, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                TaskDAO.deleteTask(TasksActivity.this, taskId);
+                TasksActivity.this.onDataChanged();
+            }
+        });
+
+        builder.setNegativeButton(R.string.confirmDeleteCancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.create().show();
+    }
+
+    private void showMoveDialog(final int taskId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Move");
+
+        final List<Category> categories = CategoryDAO.getCategories(this);
+        final String[] categoriesNames = new String[categories.size()];
+        for(int i = 0; i < categoriesNames.length; i++) {
+            categoriesNames[i] = categories.get(i).getName();
+        }
+
+        builder.setItems(categoriesNames, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Utils.makeToast(TasksActivity.this, categories.get(which).getName());
+
+                TaskDAO.changeTaskCategory(TasksActivity.this, taskId, categories.get(which).getId());
+                TasksActivity.this.onDataChanged();
+            }
+        });
+
+        builder.create().show();
     }
 
     private class TasksPagerAdapter extends FragmentPagerAdapter {

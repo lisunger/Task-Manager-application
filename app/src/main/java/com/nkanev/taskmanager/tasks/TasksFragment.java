@@ -79,33 +79,35 @@ public class TasksFragment extends Fragment {
         outState.putInt("CATEGORY_ID", this.categoryId);
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
+//    @Override
+//    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+//
+//        this.clickedItem = ((CardView) v);
+//        this.clickedItem.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
+//
+//        menu.add(Menu.NONE, v.getId(), Menu.NONE, "Delete");
+//        menu.add(Menu.NONE, v.getId(), Menu.NONE, "Move to another category");
+//    }
 
-        this.clickedItem = ((CardView) v);
-        this.clickedItem.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
+//    @Override
+//    public boolean onContextItemSelected(MenuItem item) {
+//
+//        if (item.getTitle().equals("Delete")) {
+//            // TODO write a delete method in the DAO
+//        }
+//        else if(item.getTitle().equals("Move to another category")) {
+//            // TODO write a method in the DAO
+//        }
+//        else {
+//            Toast.makeText(getActivity(), "Menu closed", Toast.LENGTH_SHORT).show();
+//            return  false;
+//        }
+//
+//        return true;
+//    }
 
-        menu.add(Menu.NONE, v.getId(), Menu.NONE, "Delete");
-        menu.add(Menu.NONE, v.getId(), Menu.NONE, "Move to another category");
-    }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        if (item.getTitle().equals("Delete")) {
-            // TODO write a delete method in the DAO
-        }
-        else if(item.getTitle().equals("Move to another category")) {
-            // TODO write a method in the DAO
-        }
-        else {
-            Toast.makeText(getActivity(), "Menu closed", Toast.LENGTH_SHORT).show();
-            return  false;
-        }
-
-        return true;
-    }
 
     private class TasksCardsAdapter extends RecyclerView.Adapter<TasksFragment.TasksCardsAdapter.ViewHolder> {
         private List<Task> tasks;
@@ -130,7 +132,7 @@ public class TasksFragment extends Fragment {
             CardView cardView = (CardView) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.card_task, parent, false);
 
-            registerForContextMenu(cardView);
+            //registerForContextMenu(cardView);
             return new ViewHolder(cardView);
         }
 
@@ -158,6 +160,14 @@ public class TasksFragment extends Fragment {
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(tasks.get(position).getId());
+                }
+            });
+
+            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    listener.onItemLongClick(tasks.get(position).getId(), cardView);
+                    return true;
                 }
             });
 
@@ -197,7 +207,7 @@ public class TasksFragment extends Fragment {
 
 
         /* -------------------------------------------------------------------------------------- */
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
 
             private CardView cardView;
 
@@ -210,6 +220,7 @@ public class TasksFragment extends Fragment {
 
     interface OnItemClickListener {
         void onItemClick(int id);
+        void onItemLongClick(int id, CardView cardView);
     }
 
 

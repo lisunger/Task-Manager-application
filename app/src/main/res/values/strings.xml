@@ -24,4 +24,15 @@
     <!-- TextViews -->
     <string name="editText_empty_tasks">No tasks</string>
 
+    <!-- Context menu options -->
+    <array name="contextMenuOptions">
+        <item>Move to category</item>
+        <item>Delete</item>
+    </array>
+
+    <!-- Popup dialog texts -->
+    <string name="confirmDeleteTitle">Delete task?</string>
+    <string name="confirmDeleteOK">OK</string>
+    <string name="confirmDeleteCancel">Cancel</string>
+
 </resources>

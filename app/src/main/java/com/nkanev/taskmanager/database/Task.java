@@ -9,7 +9,6 @@ public class Task {
     private boolean complete;
 
     public Task() {
-
     }
 
     public Task(int id, int categoryId, String name, String contents, boolean complete) {

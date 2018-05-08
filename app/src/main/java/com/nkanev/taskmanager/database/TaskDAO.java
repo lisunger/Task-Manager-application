@@ -28,9 +28,32 @@ public class TaskDAO {
             values.put("categoryId", task.getCategoryId());
 
             db.insert(
-                TasksSQLiteHelper.TABLE_TASKS,
-                null,
-                values);
+                    TasksSQLiteHelper.TABLE_TASKS,
+                    null,
+                    values);
+
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(context, "Database error", Toast.LENGTH_LONG);
+            toast.show();
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+            databaseHelper.close();
+        }
+    }
+
+    public static void deleteTask(Context context, int taskId) {
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
+
+        SQLiteDatabase db = null;
+        try {
+            db = databaseHelper.getReadableDatabase();
+
+            db.delete(
+                    TasksSQLiteHelper.TABLE_TASKS,
+                    "_id = ?",
+                    new String[]{String.valueOf(taskId)});
 
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(context, "Database error", Toast.LENGTH_LONG);
@@ -96,10 +119,10 @@ public class TaskDAO {
         List<Task> taskList = new ArrayList<Task>();
 
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
-        SQLiteDatabase db =  null;
+        SQLiteDatabase db = null;
 
         String tasksFilter;
-        switch(filter) {
+        switch (filter) {
             case ALL:
                 tasksFilter = "";
                 break;
@@ -150,7 +173,7 @@ public class TaskDAO {
             toast.show();
             databaseHelper.close();
         } finally {
-            if( db != null && db.isOpen()) {
+            if (db != null && db.isOpen()) {
                 db.close();
             }
             databaseHelper.close();
@@ -160,7 +183,6 @@ public class TaskDAO {
     }
 
     public static void updateTask(Context context, Task task) {
-        Log.d("DAO", "updateTask(), Id = " + task.getId());
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
 
         SQLiteDatabase db = null;
@@ -171,7 +193,7 @@ public class TaskDAO {
             values.put("name", task.getName());
             values.put("contents", task.getContents());
 
-            db.update(TasksSQLiteHelper.TABLE_TASKS, values, "_id = ?", new String[] { String.valueOf(task.getId())});
+            db.update(TasksSQLiteHelper.TABLE_TASKS, values, "_id = ?", new String[]{String.valueOf(task.getId())});
         } catch (SQLiteException e) {
             Toast toast = Toast.makeText(context, "Database error", Toast.LENGTH_LONG);
             toast.show();
@@ -188,18 +210,47 @@ public class TaskDAO {
         values.put("complete", (completed == true) ? 1 : 0);
 
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
-
+        SQLiteDatabase db = null;
         try {
-            SQLiteDatabase db = databaseHelper.getReadableDatabase();
+            db = databaseHelper.getReadableDatabase();
             db.update(
                     TasksSQLiteHelper.TABLE_TASKS,
                     values,
                     "_id = ?",
-                    new String[] { String.valueOf(taskId) });
+                    new String[]{String.valueOf(taskId)});
 
         } catch (SQLiteException e) {
             Toast.makeText(context, "Database unavailable", Toast.LENGTH_LONG).show();
             databaseHelper.close();
+        } finally {
+            if(db != null) {
+                db.close();
+            }
+        }
+    }
+
+    public static void changeTaskCategory(Context context, int taskId, int newCategoryId) {
+
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
+
+        SQLiteDatabase db = null;
+        ContentValues values = new ContentValues();
+        values.put("categoryId", newCategoryId);
+
+        try {
+            db = databaseHelper.getReadableDatabase();
+            db.update(
+                    TasksSQLiteHelper.TABLE_TASKS,
+                    values,
+                    "_id = ?",
+                    new String[]{String.valueOf(taskId)});
+        } catch (SQLiteException e) {
+            Toast.makeText(context, "Database unavailable", Toast.LENGTH_LONG).show();
+            databaseHelper.close();
+        } finally {
+            if(db != null) {
+                db.close();
+            }
         }
     }
 
