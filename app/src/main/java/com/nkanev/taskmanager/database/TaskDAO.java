@@ -66,6 +66,29 @@ public class TaskDAO {
         }
     }
 
+    public static void deleteTasksByCategory(Context context, int categoryId) {
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
+
+        SQLiteDatabase db = null;
+        try {
+            db = databaseHelper.getReadableDatabase();
+
+            db.delete(
+                    TasksSQLiteHelper.TABLE_TASKS,
+                    "categoryId = ?",
+                    new String[]{String.valueOf(categoryId)});
+
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(context, "Database error", Toast.LENGTH_LONG);
+            toast.show();
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+            databaseHelper.close();
+        }
+    }
+
     public static Task loadTaskFromDB(Context context, final int taskId) {
         Log.d("DAO", "loadTaskFromDB(), Id = " + taskId);
         SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);

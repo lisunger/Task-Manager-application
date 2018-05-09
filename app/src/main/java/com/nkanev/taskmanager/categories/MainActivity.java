@@ -1,13 +1,17 @@
 package com.nkanev.taskmanager.categories;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -15,9 +19,13 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.nkanev.taskmanager.R;
+import com.nkanev.taskmanager.database.CategoryDAO;
+import com.nkanev.taskmanager.database.TaskDAO;
 import com.nkanev.taskmanager.database.TasksSQLiteHelper;
+import com.nkanev.taskmanager.tasks.TasksActivity;
+import com.nkanev.taskmanager.utils.Utils;
 
-public class MainActivity extends AppCompatActivity implements CreateCategoryFragment.CreateCategoryDialogListener {
+public class MainActivity extends AppCompatActivity implements CategoriesFragment.OnItemClickListener, CreateCategoryFragment.CreateCategoryDialogListener {
 
     private static final String TAG = "MainActivity";
     private Toast toast;
@@ -110,5 +118,73 @@ public class MainActivity extends AppCompatActivity implements CreateCategoryFra
         }
     }
 
+/*
+    new OnItemClickListener() {
+    @Override
+    public void onItemClick(String id, String name) {
+        Intent intent = new Intent(getActivity(), TasksActivity.class);
+        intent.putExtra(TasksActivity.EXTRA_CATEGORY_ID, Integer.valueOf(id));
+        intent.putExtra(TasksActivity.EXTRA_CATEGORY_NAME, name);
+        startActivity(intent);
+    }
+*/
 
+    @Override
+    public void onItemClick(String id, String name) {
+        Intent intent = new Intent(this, TasksActivity.class);
+        intent.putExtra(TasksActivity.EXTRA_CATEGORY_ID, Integer.valueOf(id));
+        intent.putExtra(TasksActivity.EXTRA_CATEGORY_NAME, name);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onItemLongClick(final int categoryId, final CardView cardView) {
+        // make cardView yellow
+        cardView.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Options");
+        builder.setItems(new String[] { "Delete" }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch(which) {
+                    case 0:
+                        showDeleteDialog(categoryId);
+                        break;
+                }
+            }
+        });
+
+        // change the task's color back to white when menu closed
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                cardView.setCardBackgroundColor(getResources().getColor(android.R.color.white));
+            }
+        });
+
+        builder.create().show();
+    }
+
+    private void showDeleteDialog(final int categoryId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.confirmDeleteTopic);
+
+        builder.setPositiveButton(R.string.confirmDeleteOK, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                CategoryDAO.deleteCategory(MainActivity.this, categoryId);
+                MainActivity.this.refreshCategoriesFragment();
+            }
+        });
+
+        builder.setNegativeButton(R.string.confirmDeleteCancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.create().show();
+    }
 }

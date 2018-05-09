@@ -54,16 +54,7 @@ public class CategoriesFragment extends Fragment {
 
         this.categoriesData = loadCategoriesFromDB();
 
-        TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.categoriesData, new OnItemClickListener() {
-            @Override
-            public void onItemClick(String id, String name) {
-                Log.d("Click!", "Position: " + id);
-                Intent intent = new Intent(getActivity(), TasksActivity.class);
-                intent.putExtra(TasksActivity.EXTRA_CATEGORY_ID, Integer.valueOf(id));
-                intent.putExtra(TasksActivity.EXTRA_CATEGORY_NAME, name);
-                startActivity(intent);
-            }
-        });
+        TopicsCardsAdapter adapter = new TopicsCardsAdapter(this.categoriesData, (MainActivity) getActivity());
         topicsRecycler.setAdapter(adapter);
 
         return topicsRecycler;
@@ -134,11 +125,6 @@ public class CategoriesFragment extends Fragment {
         return (count != -1) ? count : 0;
     }
 
-    interface OnItemClickListener {
-        void onItemClick(String id, String name);
-    }
-
-    /* ------------------------------------------------------------------------------------------ */
     /**
         The adapter class receives raw data and inserts every entry into a layout (CardView)
      */
@@ -176,7 +162,7 @@ public class CategoriesFragment extends Fragment {
          */
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
-            CardView cardView = holder.cardView;
+            final CardView cardView = holder.cardView;
             TextView topicName = cardView.findViewById(R.id.card_category_name);
             topicName.setText(categoryNames[position]);
 
@@ -189,6 +175,14 @@ public class CategoriesFragment extends Fragment {
             cardView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(categoryIds[position], categoryNames[position]);
+                }
+            });
+
+            cardView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    listener.onItemLongClick(Integer.valueOf(categoryIds[position]), cardView);
+                    return true;
                 }
             });
         }
@@ -204,6 +198,11 @@ public class CategoriesFragment extends Fragment {
                 this.cardView = cardView;
             }
         }
+    }
+
+    interface OnItemClickListener {
+        void onItemClick(String id, String name);
+        void onItemLongClick(int categoryId, CardView cardview);
     }
 
 }

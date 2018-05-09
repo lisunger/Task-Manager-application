@@ -47,4 +47,30 @@ public class CategoryDAO {
 
         return categories;
     }
+
+    public static void deleteCategory(Context context, int categoryId) {
+        TaskDAO.deleteTasksByCategory(context, categoryId);
+
+        SQLiteOpenHelper databaseHelper = new TasksSQLiteHelper(context);
+
+        SQLiteDatabase db = null;
+        try {
+            db = databaseHelper.getReadableDatabase();
+
+            db.delete(
+                    TasksSQLiteHelper.TABLE_CATEGORIES,
+                    "_id = ?",
+                    new String[]{String.valueOf(categoryId)});
+
+        } catch (SQLiteException e) {
+            Toast toast = Toast.makeText(context, "Database error", Toast.LENGTH_LONG);
+            toast.show();
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+            databaseHelper.close();
+        }
+    }
+
 }

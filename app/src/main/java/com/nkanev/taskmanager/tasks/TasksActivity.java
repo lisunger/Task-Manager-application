@@ -109,7 +109,6 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
         // make cardView yellow
         cardView.setCardBackgroundColor(getResources().getColor(R.color.lightGold));
 
-        // TODO Create dialog with options
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Options");
         builder.setItems(R.array.contextMenuOptions, new DialogInterface.OnClickListener() {
@@ -171,7 +170,7 @@ public class TasksActivity extends AppCompatActivity implements TasksFragment.On
 
     private void showDeleteDialog(final int taskId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.confirmDeleteTitle);
+        builder.setMessage(R.string.confirmDeleteTask);
 
         builder.setPositiveButton(R.string.confirmDeleteOK, new DialogInterface.OnClickListener() {
             @Override

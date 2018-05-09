@@ -31,7 +31,8 @@
     </array>
 
     <!-- Popup dialog texts -->
-    <string name="confirmDeleteTitle">Delete task?</string>
+    <string name="confirmDeleteTask">Delete task?</string>
+    <string name="confirmDeleteTopic">Delete topic and all tasks?</string>
     <string name="confirmDeleteOK">OK</string>
     <string name="confirmDeleteCancel">Cancel</string>
 
